@@ -350,6 +350,11 @@ export default {
   .evaluation-card {
     padding: 1rem;
   }
+
+  .content-wrapper {
+    padding-left : 70px ;
+    width: 100%;
+    }
 }
 
 .evaluation-details-modal .modal-content {

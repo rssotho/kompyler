@@ -1337,12 +1337,14 @@ export default {
 }
 
 .content-wrapper {
-  width: 100%;
-  min-height: 100vh;
-  transition: all 0.3s;
-  background: #000000;
-}
+    padding-left : 30px ;
+    width: 100%;
+    min-height: 100vh;
+    transition: all 0.3s;
+    background: #000000;
+  }
 
+ 
 .dashboard-container {
   padding: 2rem;
   max-width: 1600px;
@@ -1359,7 +1361,6 @@ export default {
 .sticky-header {
   position: sticky;
   top: 0;
-  z-index: 1000;
 }
 
 .dashboard-header h1 {
@@ -2216,6 +2217,10 @@ export default {
 
 /* Add responsive styles */
 @media (max-width: 768px) {
+  .evaluator-item {
+    display: block !important;
+    width: 85% !important;
+  }
   .rubric-table {
     font-size: 0.9rem;
   }
@@ -2228,6 +2233,11 @@ export default {
   td:first-child {
     width: 150px;
   }
+
+  .content-wrapper {
+    padding-left : 50px ;
+    width: 100%;
+    }
 }
 
 .comments-section {

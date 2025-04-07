@@ -58,7 +58,7 @@ export default {
         { title: 'Create Task', icon: 'fas fa-tasks', route: '/create-task' },
         { title: 'Evaluate Task', icon: 'fas fa-users', route: '/evaluate-task' },
         { title: 'View Evaluations', icon: 'fas fa-eye', route: '/view-evaluations' },
-        { title: 'Export Summary', icon: 'fas fa-cog', route: '/export-summary' }
+        { title: 'Export Summary', icon: 'fa-solid fa-download', route: '/' }
       ]
     };
   },

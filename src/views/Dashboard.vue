@@ -149,10 +149,10 @@
                 <span>Team Performance</span>
                 <div class="performance-stats">
                   <span class="performing">
-                    <i class="fas fa-arrow-up"></i> {{ passedMembers }} Performing
+                    <i class="fas fa-arrow-up"></i> {{ passedMembers }} 
                   </span>
                   <span class="struggling">
-                    <i class="fas fa-arrow-down"></i> {{ failingMembers }} Struggling
+                    <i class="fas fa-arrow-down"></i> {{ failingMembers }}
                   </span>
                 </div>
               </div>
@@ -548,6 +548,25 @@ export default {
   height: 100vh; /* Full height */
   padding-top: 0;
 }
+
+@media (max-width: 767px){
+  .main-content{
+  padding-left: 70px !important;
+  }
+
+  .clock-wrapper{
+    display: none !important;
+  }
+
+  .dashboard-header{
+    top: -20px !important;
+  }
+
+  .stat-item{
+    display: block !important;
+  }
+}
+
 .dashboard-header {
   position: sticky;
   top: 0;

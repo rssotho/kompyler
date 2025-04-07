@@ -964,6 +964,7 @@ export default {
   }
   
   .content-wrapper {
+    padding-left : 5px ;
     width: 100%;
     min-height: 100vh;
     transition: all 0.3s;
@@ -984,7 +985,6 @@ export default {
   .sticky-header {
     position: sticky;
     top: 0;
-    z-index: 1000;
   }
   
   .dashboard-header h1 {
@@ -1426,6 +1426,11 @@ export default {
     
     .action-buttons {
       flex-direction: column;
+    }
+
+    .content-wrapper {
+    padding-left : 52px ;
+    width: 100%;
     }
   }
 
