@@ -75,7 +75,7 @@ export default {
       isMobile: false,
       currentRoute: '',
       navItems: [
-        { title: 'Dashboard', icon: 'fas fa-tachometer-alt', route: '/' },
+        { title: 'Dashboard', icon: 'fas fa-tachometer-alt', route: '/dashboard' },
         { title: 'Create Task', icon: 'fas fa-tasks', route: '/create-task' },
         { title: 'Evaluate', icon: 'fas fa-users', route: '/evaluate-task' },
         { title: 'View', icon: 'fas fa-eye', route: '/view-evaluations' },
