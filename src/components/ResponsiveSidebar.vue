@@ -1,46 +1,66 @@
 <template>
-  <div :class="['sidebar', { collapsed: isCollapsed, 'dark-sidebar': isDarkMode }]">
-    <div class="sidebar-header">
-      <div class="header-content">
-        <!-- Logo image that disappears when collapsed -->
-        <img v-show="!isCollapsed" src="@/assets/Kompyler.png" alt="Logo" class="sidebar-logo" />
-        
-        <!-- Toggle button -->
-        <button class="toggle-button" @click="toggleSidebar" aria-label="Toggle Sidebar">
-          <i class="fas" :class="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
-        </button>
-      </div>
-    </div>
-    
-    <div class="sidebar-content">
-      <div class="nav-section">
-        <nav class="nav-menu">
-          <div 
-            v-for="(item, index) in navItems" 
-            :key="index" 
-            class="nav-item" 
-            :class="{ active: currentRoute === item.route }"
-            @click="navigateTo(item.route)"
-          >
-            <div class="nav-icon">
-              <i :class="item.icon"></i>
-            </div>
-            <span class="nav-text">{{ item.title }}</span>
-            <div class="tooltip" v-if="isCollapsed">{{ item.title }}</div>
-          </div>
-        </nav>
-      </div>
-    </div>
-    
-    <div class="sidebar-footer">
-      <div class="nav-item" @click="logout">
-        <div class="nav-icon">
-          <i class="fas fa-sign-out-alt"></i>
+  <div>
+    <!-- Traditional sidebar for mid and large devices -->
+    <div :class="['sidebar', { collapsed: isCollapsed, 'dark-sidebar': isDarkMode }]" v-show="!isMobile">
+      <div class="sidebar-header">
+        <div class="header-content">
+          <!-- Logo image that disappears when collapsed -->
+          <img v-show="!isCollapsed" src="@/assets/Kompyler.png" alt="Logo" class="sidebar-logo" />
+          
+          <!-- Toggle button -->
+          <button class="toggle-button" @click="toggleSidebar" aria-label="Toggle Sidebar">
+            <i class="fas" :class="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+          </button>
         </div>
-        <span class="nav-text">Logout</span>
-        <div class="tooltip" v-if="isCollapsed">Logout</div>
+      </div>
+      
+      <div class="sidebar-content">
+        <div class="nav-section">
+          <nav class="nav-menu">
+            <div 
+              v-for="(item, index) in navItems" 
+              :key="index" 
+              class="nav-item" 
+              :class="{ active: currentRoute === item.route }"
+              @click="navigateTo(item.route)"
+            >
+              <div class="nav-icon">
+                <i :class="item.icon"></i>
+              </div>
+              <span class="nav-text">{{ item.title }}</span>
+              <div class="tooltip" v-if="isCollapsed">{{ item.title }}</div>
+            </div>
+          </nav>
+        </div>
+      </div>
+      
+      <div class="sidebar-footer">
+        <div class="nav-item" @click="logout">
+          <div class="nav-icon">
+            <i class="fas fa-sign-out-alt"></i>
+          </div>
+          <span class="nav-text">Logout</span>
+          <div class="tooltip" v-if="isCollapsed">Logout</div>
+        </div>
       </div>
     </div>
+
+    <!-- Bottom navigation for mobile devices -->
+    <div class="mobile-nav" v-show="isMobile">
+      <div 
+        v-for="(item, index) in navItems" 
+        :key="index" 
+        class="mobile-nav-item" 
+        :class="{ active: currentRoute === item.route }"
+        @click="navigateTo(item.route)"
+      >
+        <div class="mobile-nav-icon">
+          <i :class="item.icon"></i>
+        </div>
+        <span class="mobile-nav-text">{{ item.title }}</span>
+      </div>
+    </div>
+    
     <slot></slot>
   </div>
 </template>
@@ -52,18 +72,19 @@ export default {
     return {
       isCollapsed: false,
       isDarkMode: false,
+      isMobile: false,
       currentRoute: '',
       navItems: [
         { title: 'Dashboard', icon: 'fas fa-tachometer-alt', route: '/' },
         { title: 'Create Task', icon: 'fas fa-tasks', route: '/create-task' },
-        { title: 'Evaluate Task', icon: 'fas fa-users', route: '/evaluate-task' },
-        { title: 'View Evaluations', icon: 'fas fa-eye', route: '/view-evaluations' },
-        { title: 'Export Summary', icon: 'fa-solid fa-download', route: '/' }
+        { title: 'Evaluate', icon: 'fas fa-users', route: '/evaluate-task' },
+        { title: 'View', icon: 'fas fa-eye', route: '/view-evaluations' },
+        { title: 'Export', icon: 'fa-solid fa-download', route: '/export' }
       ]
     };
   },
   mounted() {
-    // Set initial collapsed state based on screen size
+    // Set initial states based on screen size
     this.checkScreenSize();
     // Listen for window resize events
     window.addEventListener('resize', this.checkScreenSize);
@@ -92,24 +113,22 @@ export default {
       localStorage.setItem('sidebarCollapsed', this.isCollapsed);
     },
     checkScreenSize() {
-      // Check if user had a saved preference
+      // Determine if we're on mobile
+      this.isMobile = window.innerWidth < 768;
+      
+      // For sidebar state (when not mobile)
       const savedState = localStorage.getItem('sidebarCollapsed');
       
       if (savedState !== null) {
         // Use saved preference if available
         this.isCollapsed = savedState === 'true';
       } else {
-        // Default behavior: collapsed on mobile, expanded on larger screens
-        this.isCollapsed = window.innerWidth < 768;
+        // Default behavior: collapsed on tablets, expanded on larger screens
+        this.isCollapsed = window.innerWidth < 992 && window.innerWidth >= 768;
       }
     },
     navigateTo(route) {
       this.$router.push(route);
-      
-      // On mobile, auto-collapse after navigation
-      if (window.innerWidth < 768) {
-        this.isCollapsed = true;
-      }
     },
     logout() {
       // Implement logout logic here
@@ -125,14 +144,14 @@ export default {
   position: sticky;
   top: 0;
   height: 100vh;
-  background-color: #000000;  /* Changed from gradient to solid black */
+  background-color: #000000;
   color: #ffffff;
   display: flex;
   flex-direction: column;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  z-index: 99999; /* Make sidebar appear above dashboard content */
+  z-index: 99;
   width: 240px; /* Default width when expanded */
 }
 
@@ -157,7 +176,7 @@ export default {
 }
 
 .sidebar-logo {
-  height: 400px;
+  height: 40px;
   max-width: 130px;
   object-fit: contain;
   transition: opacity 0.3s ease;
@@ -185,43 +204,7 @@ export default {
 .sidebar-content {
   flex: 1;
   padding: 16px 0;
-  overflow: hidden; /* Remove scroll and hide overflow */
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  margin-bottom: 8px;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #3498db;
-}
-
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.user-info {
-  margin-left: 12px;
-}
-
-.user-name {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.user-role {
-  font-size: 12px;
-  color: #bdc3c7;
 }
 
 .nav-section {
@@ -232,8 +215,8 @@ export default {
 .nav-menu {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 140px); /* Account for header and footer */
-  padding: 0 8px; /* Add some padding for spacing */
+  max-height: calc(100vh - 140px);
+  padding: 0 8px;
 }
 
 .nav-item {
@@ -246,10 +229,9 @@ export default {
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-  flex-shrink: 0; /* Prevent items from shrinking */
+  flex-shrink: 0;
 }
 
-/* This is the key fix for icon alignment when collapsed */
 .sidebar.collapsed .nav-item {
   justify-content: center;
   padding: 12px 0;
@@ -297,7 +279,7 @@ export default {
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s ease;
-  z-index: 999999;
+  z-index: 9999;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   border: 1px solid #ff0000;
 }
@@ -327,35 +309,72 @@ export default {
   gap: 8px;
 }
 
-/* Also align footer items when collapsed */
 .sidebar.collapsed .sidebar-footer .nav-item {
   justify-content: center;
   padding: 12px 0;
 }
 
-/* Responsive adjustments */
+/* Mobile bottom navigation styling */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background-color: #000000;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  padding: 8px 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-item.active {
+  color: #ff3333;
+  background-color: rgba(255, 0, 0, 0.05);
+}
+
+.mobile-nav-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.mobile-nav-text {
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Adjust main content to account for mobile nav */
 @media (max-width: 767px) {
-  .sidebar {
-    position: fixed;
-    z-index: 1000;
-  }
-  
-  .sidebar:not(.collapsed) {
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+  :deep(.app-content) {
+    padding-bottom: 64px; /* Match height of mobile nav */
   }
 }
 
-/* Animations for smoother experience */
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-.nav-item {
+.nav-item, .mobile-nav-item {
   animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Shadow transition */
 .sidebar {
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
               box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -366,7 +385,7 @@ export default {
 }
 
 .dark-sidebar {
-  background-color: #000000;  /* Changed from gradient to solid black */
+  background-color: #000000;
   color: #ffffff;
 }
 </style>

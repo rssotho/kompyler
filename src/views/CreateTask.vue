@@ -1428,10 +1428,6 @@ export default {
       flex-direction: column;
     }
 
-    .content-wrapper {
-    padding-left : 52px ;
-    width: 100%;
-    }
   }
 
   .modal {

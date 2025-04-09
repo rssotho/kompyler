@@ -550,10 +550,6 @@ export default {
 }
 
 @media (max-width: 767px){
-  .main-content{
-  padding-left: 70px !important;
-  }
-
   .clock-wrapper{
     display: none !important;
   }
