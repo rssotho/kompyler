@@ -25,7 +25,23 @@ const routes = [
     path: '/view-evaluations',
     name: 'ViewEvaluations',
     component: () => import('@/views/ViewEvaluations.vue')
+  },
+  {
+    path: '/landing-page',
+    name: 'landingPage',
+    component: () => import('@/views/landingPage.vue')
+  },
+  {
+    path: '/Profile',
+    name: 'Profile',
+    component: () => import('@/views/Profile.vue')
+  },
+  {
+    path: '/ManageUsers',
+    name: 'ManageUsers',
+    component: () => import('@/views/ManageUsers.vue')
   }
+  
 ];
 
 const router = createRouter({

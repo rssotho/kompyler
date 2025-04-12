@@ -4,10 +4,7 @@
     <div :class="['sidebar', { collapsed: isCollapsed, 'dark-sidebar': isDarkMode }]" v-show="!isMobile">
       <div class="sidebar-header">
         <div class="header-content">
-          <!-- Logo image that disappears when collapsed -->
-          <img v-show="!isCollapsed" src="@/assets/Kompyler.png" alt="Logo" class="sidebar-logo" />
-          
-          <!-- Toggle button -->
+          <img v-show="!isCollapsed" src="@/assets/Kompyler.png" alt="Logo" class="sidebar-logo2" />
           <button class="toggle-button" @click="toggleSidebar" aria-label="Toggle Sidebar">
             <i class="fas" :class="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
           </button>
@@ -17,19 +14,44 @@
       <div class="sidebar-content">
         <div class="nav-section">
           <nav class="nav-menu">
-            <div 
-              v-for="(item, index) in navItems" 
-              :key="index" 
-              class="nav-item" 
-              :class="{ active: currentRoute === item.route }"
-              @click="navigateTo(item.route)"
-            >
-              <div class="nav-icon">
-                <i :class="item.icon"></i>
+            <template v-for="(item, index) in navItems" :key="`item-${index}`">
+              <div class="nav-item-container">
+                <div 
+                  class="nav-item" 
+                  :class="{ active: currentRoute === item.route, 'has-dropdown-open': item.dropdown && expandedDropdowns.includes(index), 'system-management': item.title === 'System Management' }"
+                  @click="item.dropdown ? toggleDropdown(index) : navigateTo(item.route)"
+                >
+                  <div class="nav-icon">
+                    <i :class="item.icon"></i>
+                  </div>
+                  <span class="nav-text" :class="{ 'system-text': item.title === 'System Management' }">{{ item.title }}</span>
+                  <i v-if="item.dropdown && !isCollapsed" class="fas dropdown-arrow" :class="expandedDropdowns.includes(index) ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                  <div class="tooltip" v-if="isCollapsed">{{ item.title }}</div>
+                </div>
+                
+                <transition name="dropdown">
+                  <div 
+                    v-if="item.dropdown && expandedDropdowns.includes(index)"
+                    class="dropdown-container"
+                    :class="{ 'side-dropdown': isCollapsed }"
+                  >
+                    <template v-for="(dropdownItem, dropIndex) in item.dropdownItems" :key="`drop-${index}-${dropIndex}`">
+                      <div 
+                        class="dropdown-item"
+                        :class="{ active: currentRoute === dropdownItem.route }"
+                        @click="navigateTo(dropdownItem.route)"
+                      >
+                        <div class="dropdown-icon">
+                          <i :class="dropdownItem.icon"></i>
+                        </div>
+                        <span class="dropdown-text">{{ dropdownItem.title }}</span>
+                        <div class="tooltip" v-if="isCollapsed">{{ dropdownItem.title }}</div>
+                      </div>
+                    </template>
+                  </div>
+                </transition>
               </div>
-              <span class="nav-text">{{ item.title }}</span>
-              <div class="tooltip" v-if="isCollapsed">{{ item.title }}</div>
-            </div>
+            </template>
           </nav>
         </div>
       </div>
@@ -46,21 +68,60 @@
     </div>
 
     <!-- Bottom navigation for mobile devices -->
-    <div class="mobile-nav" v-show="isMobile">
-      <div 
-        v-for="(item, index) in navItems" 
-        :key="index" 
-        class="mobile-nav-item" 
-        :class="{ active: currentRoute === item.route }"
-        @click="navigateTo(item.route)"
-      >
-        <div class="mobile-nav-icon">
-          <i :class="item.icon"></i>
-        </div>
-        <span class="mobile-nav-text">{{ item.title }}</span>
+    <div class="mobile-nav-container" v-show="isMobile">
+      <div class="mobile-nav-scroll-indicator left" v-if="hasMoreItemsLeft">
+        <i class="fas fa-chevron-left"></i>
+      </div>
+      <div class="mobile-nav" ref="mobileNav" @scroll="checkScrollPosition">
+        <template v-for="(item, index) in mobileNavItems" :key="index">
+          <div 
+            class="mobile-nav-item" 
+            :class="{ active: currentRoute === item.route }"
+            @click="item.dropdown ? toggleMobileDropdown(item) : navigateTo(item.route)"
+          >
+            <div class="mobile-nav-icon">
+              <i :class="item.icon"></i>
+            </div>
+            <span class="mobile-nav-text">{{ item.title === 'System Management' ? 'System' : item.title }}</span>
+          </div>
+          <transition name="dropdown">
+            <div v-if="item.dropdown && mobileExpanded.includes(item.title)" class="mobile-dropdown">
+              <div class="dropdown-item" v-for="(dropdownItem, dropIndex) in item.dropdownItems" :key="`mobile-drop-${dropIndex}`" @click="navigateTo(dropdownItem.route)">
+                {{ dropdownItem.title }}
+              </div>
+            </div>
+          </transition>
+        </template>
+      </div>
+      <div class="mobile-nav-scroll-indicator right" v-if="hasMoreItemsRight">
+        <i class="fas fa-chevron-right"></i>
       </div>
     </div>
-    
+
+    <!-- Modal for Settings -->
+    <modal v-if="showSettingsModal" @close="showSettingsModal = false">
+      <template #header>
+        <h3>Settings</h3>
+      </template>
+      <template #body>
+        <div>
+          <label for="setting1">Setting 1</label>
+          <select id="setting1">
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+          </select>
+          <label for="setting2">Setting 2</label>
+          <select id="setting2">
+            <option value="option1">Option 1</option>
+            <option value="option2">Option 2</option>
+          </select>
+        </div>
+      </template>
+      <template #footer>
+        <button @click="showSettingsModal = false">Close</button>
+      </template>
+    </modal>
+
     <slot></slot>
   </div>
 </template>
@@ -74,66 +135,102 @@ export default {
       isDarkMode: false,
       isMobile: false,
       currentRoute: '',
+      expandedDropdowns: [], // Tracks which dropdowns are expanded
+      mobileExpanded: [], // Tracks which mobile dropdowns are expanded
+      showSettingsModal: false, // Controls the visibility of the settings modal
+      hasMoreItemsLeft: false,
+      hasMoreItemsRight: true,
       navItems: [
         { title: 'Dashboard', icon: 'fas fa-tachometer-alt', route: '/dashboard' },
         { title: 'Create Task', icon: 'fas fa-tasks', route: '/create-task' },
         { title: 'Evaluate', icon: 'fas fa-users', route: '/evaluate-task' },
+        { 
+          title: 'System Management', 
+          icon: 'fas fa-cog', 
+          dropdown: true,
+          dropdownItems: [
+            { title: 'Manage users', icon: 'fas fa-user-cog', route: '/ManageUsers' },
+            { title: 'Profile', icon: 'fas fa-sliders-h', route: '/Profile' }
+          ]
+        },
         { title: 'View', icon: 'fas fa-eye', route: '/view-evaluations' },
         { title: 'Export', icon: 'fa-solid fa-download', route: '/export' }
       ]
     };
   },
+  computed: {
+    mobileNavItems() {
+      let items = [];
+      this.navItems.forEach(item => {
+        if (item.dropdown) {
+          items.push(item); // Add main item
+        } else {
+          items.push(item);
+        }
+      });
+      return items;
+    }
+  },
   mounted() {
-    // Set initial states based on screen size
     this.checkScreenSize();
-    // Listen for window resize events
     window.addEventListener('resize', this.checkScreenSize);
-    // Get current route
     this.currentRoute = this.$route.path;
-    // Listen for route changes
     this.$router.afterEach((to) => {
       this.currentRoute = to.path;
-    });
-    // Add event listeners for tooltip positioning
-    document.querySelectorAll('.nav-item').forEach(item => {
-      item.addEventListener('mouseenter', (e) => {
-        const rect = e.target.getBoundingClientRect();
-        e.target.style.setProperty('--tooltip-y', `${rect.top + rect.height/2}px`);
-      });
+      this.handleRouteChange(to);
     });
   },
   beforeDestroy() {
-    // Remove event listener
     window.removeEventListener('resize', this.checkScreenSize);
   },
   methods: {
     toggleSidebar() {
       this.isCollapsed = !this.isCollapsed;
-      // Store preference in localStorage for persistence
       localStorage.setItem('sidebarCollapsed', this.isCollapsed);
     },
-    checkScreenSize() {
-      // Determine if we're on mobile
-      this.isMobile = window.innerWidth < 768;
-      
-      // For sidebar state (when not mobile)
-      const savedState = localStorage.getItem('sidebarCollapsed');
-      
-      if (savedState !== null) {
-        // Use saved preference if available
-        this.isCollapsed = savedState === 'true';
+    toggleDropdown(index) {
+      const expandedIndex = this.expandedDropdowns.indexOf(index);
+      if (expandedIndex === -1) {
+        this.expandedDropdowns.push(index);
       } else {
-        // Default behavior: collapsed on tablets, expanded on larger screens
-        this.isCollapsed = window.innerWidth < 992 && window.innerWidth >= 768;
+        this.expandedDropdowns.splice(expandedIndex, 1);
       }
+    },
+    checkScreenSize() {
+      this.isMobile = window.innerWidth < 768;
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      this.isCollapsed = savedState !== null ? savedState === 'true' : window.innerWidth < 992 && window.innerWidth >= 768;
     },
     navigateTo(route) {
       this.$router.push(route);
     },
     logout() {
-      // Implement logout logic here
       console.log('Logging out...');
-      // Example: this.$store.dispatch('auth/logout');
+    },
+    checkScrollPosition() {
+      if (!this.$refs.mobileNav) return;
+      const nav = this.$refs.mobileNav;
+      this.hasMoreItemsLeft = nav.scrollLeft > 10;
+      const isAtEnd = Math.abs((nav.scrollWidth - nav.clientWidth - nav.scrollLeft)) < 10;
+      this.hasMoreItemsRight = !isAtEnd;
+    },
+    toggleMobileDropdown(item) {
+      const index = this.mobileExpanded.indexOf(item.title);
+      if (index === -1) {
+        this.mobileExpanded.push(item.title);
+      } else {
+        this.mobileExpanded.splice(index, 1);
+      }
+    },
+    handleRouteChange(to) {
+      this.navItems.forEach((item, index) => {
+        if (item.dropdown) {
+          const containsRoute = item.dropdownItems.some(dropItem => dropItem.route === to.path);
+          if (containsRoute && !this.expandedDropdowns.includes(index)) {
+            this.expandedDropdowns.push(index);
+          }
+        }
+      });
     }
   }
 };
@@ -152,7 +249,7 @@ export default {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   z-index: 99;
-  width: 240px; /* Default width when expanded */
+  width: 260px; /* Increased from 240px to 260px */
 }
 
 .sidebar.collapsed {
@@ -175,8 +272,8 @@ export default {
   justify-content: space-between;
 }
 
-.sidebar-logo {
-  height: 40px;
+.sidebar-logo2 {
+  height: 120px;
   max-width: 130px;
   object-fit: contain;
   transition: opacity 0.3s ease;
@@ -204,7 +301,8 @@ export default {
 .sidebar-content {
   flex: 1;
   padding: 16px 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .nav-section {
@@ -215,8 +313,12 @@ export default {
 .nav-menu {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 140px);
   padding: 0 8px;
+}
+
+.nav-item-container {
+  position: relative;
+  margin-bottom: 4px;
 }
 
 .nav-item {
@@ -224,12 +326,21 @@ export default {
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  margin: 4px 8px;
+  margin: 0 8px;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.nav-item.system-management {
+  padding-right: 8px; /* Reduce right padding for System Management */
+}
+
+.nav-item.has-dropdown-open {
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 0;
 }
 
 .sidebar.collapsed .nav-item {
@@ -258,7 +369,17 @@ export default {
 .nav-text {
   margin-left: 12px;
   transition: opacity 0.2s ease, width 0.2s ease, margin 0.2s ease;
-  font-size: 14px;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.nav-text.system-text {
+  font-size: 11px; /* Special smaller font only for System Management */
+  letter-spacing: -0.3px; /* Condense the text */
+  max-width: 150px; /* More space for this text */
 }
 
 .sidebar.collapsed .nav-text {
@@ -314,20 +435,35 @@ export default {
   padding: 12px 0;
 }
 
-/* Mobile bottom navigation styling */
-.mobile-nav {
+/* Mobile bottom navigation styling - now horizontally scrollable */
+.mobile-nav-container {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   height: 64px;
   background-color: #000000;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
   z-index: 1000;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+}
+
+.mobile-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  flex: 1;
+  height: 100%;
+}
+
+/* Hide scrollbar */
+.mobile-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .mobile-nav-item {
@@ -335,12 +471,14 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex: 1;
+  min-width: 20%; /* Show 5 items */
+  flex: 0 0 20%; /* Fixed size for each item */
   height: 100%;
   padding: 8px 0;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.7);
   transition: all 0.2s ease;
+  overflow: hidden;
 }
 
 .mobile-nav-item.active {
@@ -354,8 +492,37 @@ export default {
 }
 
 .mobile-nav-text {
-  font-size: 11px;
+  font-size: 10px;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  padding: 0 4px;
+}
+
+/* Scroll indicators for mobile nav */
+.mobile-nav-scroll-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
+  width: 24px;
+  height: 100%;
+  position: relative;
+  color: #ff3333;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.mobile-nav-scroll-indicator.left {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
+  left: 0;
+}
+
+.mobile-nav-scroll-indicator.right {
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
+  right: 0;
 }
 
 /* Adjust main content to account for mobile nav */
@@ -365,27 +532,119 @@ export default {
   }
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Dropdown styling */
+.dropdown-arrow {
+  margin-left: auto;
+  font-size: 14px;
+  transition: transform 0.3s ease;
+  color: #ff3333;
+  padding-left: 4px; /* Less padding to save space */
 }
 
-.nav-item, .mobile-nav-item {
-  animation: fadeIn 0.3s ease-in-out;
+.dropdown-container {
+  width: calc(100% - 16px);
+  margin: 0 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+  box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.sidebar {
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Side dropdown styling for collapsed sidebar */
+.dropdown-container.side-dropdown {
+  position: absolute;
+  left: 60px; /* Position next to collapsed sidebar */
+  top: 0;
+  width: 200px;
+  margin: 0;
+  background-color: #1a1a1a;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
 }
 
-.sidebar.collapsed:hover {
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+.dropdown-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-.dark-sidebar {
-  background-color: #000000;
-  color: #ffffff;
+.dropdown-item:hover {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.dropdown-item.active {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%);
+}
+
+.dropdown-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 24px;
+  font-size: 14px;
+  color: #ff3333;
+}
+
+.dropdown-text {
+  margin-left: 10px;
+  font-size: 12px;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+/* Collapsed state dropdown */
+.sidebar.collapsed .dropdown-container {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  width: 200px;
+  background-color: #1a1a1a;
+  border-radius: 0 10px 10px 10px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+  z-index: 9000;
+  padding: 8px;
+  margin: 0;
+}
+
+.sidebar.collapsed .dropdown-item {
+  padding: 10px 16px;
+  margin: 4px 0;
+  background-color: transparent;
+  border-radius: 6px;
+}
+
+.sidebar.collapsed .dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dropdown animations */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.3s ease;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.dropdown-enter-to,
+.dropdown-leave-from {
+  max-height: 300px;
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

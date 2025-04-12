@@ -6,6 +6,7 @@
 <script>
 import NotificationToast from './components/NotificationToast.vue'
 
+
 export default {
   name: 'App',
   components: {

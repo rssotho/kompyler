@@ -193,7 +193,6 @@
                  placeholder="Enter member role">
         </div>
         <div class="form-actions">
-          <button type="button" class="btn-secondary" @click="closeModal">Cancel</button>
           <button type="submit" class="btn-primary">
             {{ isEditing ? 'Update Member' : 'Add Member' }}
           </button>
@@ -959,7 +958,6 @@ export default {
     min-height: 100vh;
     background: #000000;
     color: #ffffff;
-    font-family: 'Inter', sans-serif;
     font-size: 16px;
   }
   

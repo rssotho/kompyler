@@ -65,7 +65,6 @@
                   <input v-model="newEvaluator.role" type="text" class="form-input" required>
                 </div>
                 <div class="form-actions">
-                  <button type="button" class="btn-secondary" @click="closeModal">Cancel</button>
                   <button type="submit" class="btn-primary">Add Evaluator</button>
                 </div>
               </form>
@@ -210,8 +209,7 @@
               </div>
 
               <div class="modal-footer">
-                <button class="btn-secondary" @click="closeEvaluationModal">Cancel</button>
-                <button class="btn-primary" @click="submitEvaluation">Submit Evaluation</button>
+                <button class="btn-primary w-50" @click="submitEvaluation">Submit Evaluation</button>
               </div>
             </div>
           </div>
@@ -225,7 +223,7 @@
 <script>
 import ResponsiveSidebar from '@/components/ResponsiveSidebar.vue';
 import eventBus from '@/utils/eventBus';  // Add this import
-import { notificationStore } from '@/stores/notificationStore'
+import { notificationStore } from '@/store/notificationStore'
 
 export default {
   name: 'EvaluateTask',
@@ -922,7 +920,6 @@ export default {
         <style>
           .evaluation-results {
             color: #fff;
-            font-family: 'Inter', sans-serif;
           }
           .eval-header {
             display: flex;
@@ -1333,7 +1330,6 @@ export default {
   min-height: 100vh;
   background: #000000;
   color: #ffffff;
-  font-family: 'Inter', sans-serif;
 }
 
 .content-wrapper {
@@ -2795,4 +2791,95 @@ export default {
   margin: 0;
   padding: 0;
 }
+
+.modal.evaluation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: auto;
+}
+
+.modal-content.evaluation-content {
+  border-radius: 8px;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+@media screen and (max-width: 768px) {
+  .modal-content.evaluation-content {
+    width: 100%;
+    margin: 5px;
+    padding: 5px;
+  }
+
+  .rubric-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .rubric-table thead {
+    display: none; /* Hide original header */
+  }
+
+  .rubric-table tbody tr {
+    display: block;
+    margin-bottom: 10px;
+    border-radius: 20px !important;
+  }
+
+  .rubric-table tbody td {
+    display: block;
+    text-align: left;
+    padding: 8px;
+  }
+
+  .rubric-table tbody td:first-child {
+    font-weight: bold;
+  }
+
+  .score-cell {
+    position: relative;
+    padding: 8px;
+  }
+
+  .score-cell .score-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .score-cell .score-description {
+    margin-bottom: 5px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .comments-section {
+    margin-top: 15px;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+
+  .modal-footer button {
+    flex-grow: 1;
+    margin: 0 5px;
+  }
+}
+
 </style>

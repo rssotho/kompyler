@@ -1,5 +1,5 @@
 import mitt from 'mitt';
-import { notificationStore } from '../stores/notificationStore';
+import { notificationStore } from '../store/notificationStore';
 
 const emitter = mitt();
 

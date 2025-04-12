@@ -1,4 +1,4 @@
-import { notificationStore } from '@/stores/notificationStore'
+import { notificationStore } from '@/store/notificationStore'
 
 export default {
   mounted() {

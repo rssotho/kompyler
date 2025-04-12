@@ -538,7 +538,6 @@ export default {
   height: 100vh; /* Changed from min-height to fixed height */
   background-color: #000000;
   color: #e6eaef;
-  font-family: 'Inter', sans-serif;
   overflow: hidden; /* Prevent container from scrolling */
 }
 .main-content {
