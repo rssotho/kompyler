@@ -1,14 +1,44 @@
 body {
-    background-color: #121212;
-    color: #ffffff;
+  background-color: #121212;
+  color: #ffffff;
 }
 
 .dark-mode {
-    background-color: #121212;
-    color: #ffffff;
+  background-color: #121212;
+  color: #ffffff;
 }
 
 .dark-sidebar {
-    background-color: #000000;
-    color: #ffffff;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.swal2-modal {
+  border-radius: 2rem !important;
+}
+
+.swal2-confirm {
+  background-color: var(--secondary-color) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(64 64 64 / 40%) !important;
+  font-size: 12px !important;
+}
+
+.swal2-cancel {
+  background-color: #c82333 !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(64 64 64 / 40%) !important;
+  font-size: 12px !important;
+}
+
+.swal2-deny {
+  background-color: var(--primary-color) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 20px 0 rgb(0 0 0 / 14%), 0 7px 10px -5px rgb(64 64 64 / 40%) !important;
+  font-size: 12px !important;
+}
+
+.swal2-title {
+  font-family: Poppins, sans-serif;
+  font-weight: 500;
 }
