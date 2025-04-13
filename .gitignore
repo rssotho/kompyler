@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Created by https://www.gitignore.io
 
 ### OSX ###
@@ -104,3 +105,28 @@ env/
 docker-compose.yml
 proba-backend/Dockerfile
 proba-frontend/Dockerfile
+=======
+.DS_Store
+node_modules
+/dist
+
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+>>>>>>> 467b6ff8a7263382a755fc92948e46db545a6824
