@@ -6,7 +6,7 @@
         <img src="@/assets/Kompyler.png" alt="Logo" />
       </div>
       <div class="back-link" @click="goBack">
-        <span>Back to website</span>
+        <span>Visit website</span>
         <i class="fas fa-arrow-right"></i>
       </div>
       <div class="carousel">
@@ -378,41 +378,39 @@ export default {
 
     // OTP related methods
     generateOTP() {
-      // Generate a 6-digit random number
-      this.otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-      console.log('Generated OTP:', this.otpCode); // For testing only
-      
-      // Show OTP section
-      this.showOTPSection = true;
-      this.startOTPTimer();
-      
-      // In a real app, you would send this OTP to the user's email
-      // Example: this.sendOTPEmail(this.form.email, this.otpCode);
-    },
+    this.otpCode = '123456'; // Fixed OTP
+    console.log('Generated OTP:', this.otpCode); // For testing only
+    
+    // Show OTP section
+    this.showOTPSection = true;
+    this.startOTPTimer();
+    
+    // In a real app, you would send this OTP to the user's email
+    // Example: this.sendOTPEmail(this.form.email, this.otpCode);
+  },
 
-    verifyOTP() {
-      const enteredOTP = this.otpDigits.join('');
-      if (enteredOTP === this.otpCode) {
-        // OTP verification successful
-        this.successMessage = 'Email verified successfully!';
-        this.showOTPSection = false;
-        
-        // Mark user as verified
-        const userIndex = this.users.findIndex(u => u.email === this.form.email);
-        if (userIndex !== -1) {
-          this.users[userIndex].verified = true;
-          this.saveUsers();
-        }
-
-        setTimeout(() => {
-          this.isLogin = true;
-          this.successMessage = '';
-        }, 2000);
-      } else {
-        this.otpErrorMessage = 'Invalid verification code. Please try again.';
+  verifyOTP() {
+    const enteredOTP = this.otpDigits.join('');
+    if (enteredOTP === this.otpCode) {
+      // OTP verification successful
+      this.successMessage = 'Email verified successfully!';
+      this.showOTPSection = false;
+      
+      // Mark user as verified
+      const userIndex = this.users.findIndex(u => u.email === this.form.email);
+      if (userIndex !== -1) {
+        this.users[userIndex].verified = true;
+        this.saveUsers();
       }
-    },
 
+      setTimeout(() => {
+        this.isLogin = true;
+        this.successMessage = '';
+      }, 2000);
+    } else {
+      this.otpErrorMessage = 'Invalid verification code. Please try again.';
+    }
+  },
     resendOTP() {
       if (this.otpResendCount >= 3) {
         this.otpErrorMessage = 'Maximum resend attempts reached. Please try again later.';

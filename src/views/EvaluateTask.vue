@@ -222,8 +222,6 @@
 
 <script>
 import ResponsiveSidebar from '@/components/ResponsiveSidebar.vue';
-import eventBus from '@/utils/eventBus';  // Add this import
-import { notificationStore } from '@/store/notificationStore'
 
 export default {
   name: 'EvaluateTask',
