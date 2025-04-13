@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Created by https://www.gitignore.io
 
 ### OSX ###
@@ -105,7 +104,6 @@ env/
 docker-compose.yml
 proba-backend/Dockerfile
 proba-frontend/Dockerfile
-=======
 .DS_Store
 node_modules
 /dist
@@ -129,4 +127,3 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
->>>>>>> 467b6ff8a7263382a755fc92948e46db545a6824
