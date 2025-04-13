@@ -1,3 +1,4 @@
+
 <template>
   <div>
     <div v-if="isLoading" class="loading-overlay">
@@ -12,7 +13,7 @@
       </div>
     </div>
 
-    <router-view @hook:mounted="hideLoader" />
+    <router-view />
     <NotificationToast />
   </div>
 </template>
@@ -29,13 +30,14 @@ export default {
   },
   setup() {
     const isLoading = ref(false);
-    const fullText = ref('Loading');
     const displayedText = ref('');
     const typingInterval = ref(null);
     const typingIndex = ref(0);
+    const currentPath = ref('');
     const router = useRouter();
 
     const startTypingAnimation = () => {
+      const fullText = `Loading ${currentPath.value}`;
       typingIndex.value = 0;
       displayedText.value = '';
       
@@ -44,17 +46,18 @@ export default {
       }
       
       typingInterval.value = setInterval(() => {
-        if (typingIndex.value < fullText.value.length) {
-          displayedText.value += fullText.value.charAt(typingIndex.value);
+        if (typingIndex.value < fullText.length) {
+          displayedText.value += fullText.charAt(typingIndex.value);
           typingIndex.value++;
         } else {
-          // Reset to start typing again
-          setTimeout(() => {
-            typingIndex.value = 0;
-            displayedText.value = '';
-          }, 500);
+          // Add ellipsis effect
+          if (displayedText.value.endsWith('...')) {
+            displayedText.value = displayedText.value.slice(0, -3);
+          } else {
+            displayedText.value += '.';
+          }
         }
-      }, 150);
+      }, 100);
     };
 
     const stopTypingAnimation = () => {
@@ -64,12 +67,21 @@ export default {
       }
     };
 
-    const hideLoader = () => {
+    router.beforeEach((to, from, next) => {
+      isLoading.value = true;
+      // Extract and format the path for display
+      currentPath.value = to.path === '/' ? 'home' : to.path.replace(/^\//, '').replace(/\//g, ' > ');
+      startTypingAnimation();
+      next();
+    });
+
+    router.afterEach(() => {
+      // Add a small delay to ensure the component has time to render
       setTimeout(() => {
         isLoading.value = false;
         stopTypingAnimation();
-      }, 2000);
-    };
+      }, 500);
+    });
 
     watch(isLoading, (newValue) => {
       if (newValue === true) {
@@ -79,21 +91,9 @@ export default {
       }
     });
 
-    router.beforeEach((to, from, next) => {
-      isLoading.value = true;
-      next();
-    });
-
-    router.afterEach(() => {
-      setTimeout(() => {
-        isLoading.value = false;
-      }, 2000);
-    });
-
     return { 
-      isLoading, 
-      hideLoader, 
-      displayedText 
+      isLoading,
+      displayedText
     };
   }
 }
