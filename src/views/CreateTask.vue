@@ -4,7 +4,7 @@
     <div class="content-wrapper">
       <div class="dashboard-container">
         <div class="dashboard-header sticky-header">
-          <h1>Team Management & Task Creation</h1>
+          <h4 class="title">Team Management & Task Creation</h4>
           <p class="description">Manage your team members and create new tasks efficiently.</p>
         </div>
         
@@ -994,7 +994,7 @@ export default {
 
   .dashboard-header .description {
     font-size: 1rem;
-    color: #fff;
+    color: #9e9e9e;
     margin-top: 0.5rem;
   }
   
@@ -1722,7 +1722,7 @@ export default {
 
   .task-description {
     margin: 1rem 0;
-    color: #e5e7eb;
+    color: #636363;
     line-height: 1.5;
   }
 
@@ -2088,7 +2088,10 @@ export default {
     color: #ff3333;
     margin-bottom: 1rem;
   }
-
+  .title{
+    font-size: 22px;
+    color: rgb(215, 215, 215);
+  }
   .no-tasks-title {
     font-size: 1.25rem;
     font-weight: 600;

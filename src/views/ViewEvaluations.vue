@@ -4,7 +4,7 @@
     <div class="content-wrapper">
       <div class="dashboard-container">
         <div class="dashboard-header sticky-header">
-          <h1>Evaluation Results</h1>
+          <h3 class="title">Evaluation Results</h3>
           <p class="description">View all task evaluations and their outcomes.</p>
         </div>
 
@@ -487,6 +487,11 @@ export default {
 .category-title i {
   font-size: 1.5rem;
   color: #ff3333;
+}
+
+.title{
+  font-size: 22px;
+  color: rgb(215, 215, 215);
 }
 
 .score-circle {

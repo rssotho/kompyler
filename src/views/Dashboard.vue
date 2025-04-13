@@ -4,7 +4,7 @@
     <div class="main-content">
       <div class="dashboard-header">
         <div class="header-left">
-          <h1 class="dashboard-title">Overview</h1>
+          <h3 class="dashboard-title">Overview</h3>
           <p class="access-info">Effortlessly manage, track, and evaluate tasks with streamlined performance insights on a sleek, user-friendly dashboard.</p>
         </div>
         <div class="header-right">
@@ -576,10 +576,11 @@ export default {
   isolation: isolate; /* Create new stacking context */
 }
 .dashboard-title {
-  font-size: 1.5rem;
-  font-weight: 600;
   margin: 0;
   margin-bottom: 0.5rem;
+  margin-top: 1rem;
+  font-size: 22px;
+  color: rgb(215, 215, 215);
 }
 .access-info {
   color: #9ca3af;

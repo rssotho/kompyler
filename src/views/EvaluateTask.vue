@@ -4,7 +4,7 @@
     <div class="content-wrapper">
       <div class="dashboard-container">
         <div class="dashboard-header sticky-header">
-          <h1>Evaluate Tasks</h1>
+          <h3 class="title">Evaluate Tasks</h3>
           <p class="description">View and evaluate tasks assigned to team members.</p>
         </div>
 
@@ -2079,6 +2079,11 @@ export default {
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.2s;
+}
+
+.title{
+  font-size: 22px;
+  color: rgb(215, 215, 215);
 }
 
 .evaluator-profile.disabled:hover::after {

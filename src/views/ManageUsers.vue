@@ -1,13 +1,25 @@
 <template>
     <div class="dashboard dark-mode">
       <header class="header">
-        
-        <img v-show="!isCollapsed" src="@/assets/Kompyler.png" alt="Logo" class="sidebar-logo2" />
-        <div class="user-profile">
-          <span class="user-name">Hashim Briccam</span>
-          <img src="@/assets/Avatar.png" alt="User Avatar" class="avatar" />
-        </div>
-      </header>
+  <div class="header-left">
+    <router-link to="/dashboard" class="back-to-dashboard">
+    <i class="fas fa-arrow-left"></i>
+    <span class="back-text">Back to Dashboard</span>
+    </router-link>
+
+    
+    <div class="logo">
+      <img src="@/assets/Kompyler_logo.svg" alt="Kompyler Logo" class="sidebar-logo2">
+      <span class="logo-name">Kompyler</span>
+    </div>
+  </div>
+
+  <div class="user-profile">
+    <span class="user-name">Hashim Briccam</span>
+    <img src="@/assets/Avatar.png" alt="User Avatar" class="avatar" />
+  </div>
+</header>
+
   
       <div class="content">
         <div class="page-header">
@@ -24,11 +36,11 @@
                 </svg>
               </button>
             </div>
-            <button class="add-user-btn" @click="showAddUserModal = true">Add User</button>
+            <button class="add-user-btn" @click="showAddUserModal = true"><i class="fa-solid fa-user-plus"></i></button>
           </div>
         </div>
   
-        <div class="user-table">
+        <div class="user-table desktop-view">
           <table>
             <thead>
               <tr>
@@ -108,9 +120,66 @@
             </tbody>
           </table>
         </div>
+        <div class="mobile-view">
+      <div v-for="user in paginatedUsers" :key="user.id" class="user-card">
+        <div class="user-card-header">
+          <div class="user-info">
+            <img :src="user.avatar" alt="User Avatar" class="user-avatar" />
+            <div class="user-details">
+              <div class="user-name">{{ user.name }}</div>
+              <div class="user-email">{{ user.email }}</div>
+            </div>
+          </div>
+          <div class="user-status">
+            <span :class="['status-badge', user.status === 'Available' ? 'available' : 'busy']">
+              {{ user.status }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="user-card-body">
+          <div class="user-roles">
+            <span 
+              v-for="role in user.roles" 
+              :key="role"
+              :class="['badge', 
+                role === 'Manager' ? 'manager' : 
+                role === 'Admin' ? 'admin' : 
+                role === 'Editor' ? 'editor' : '']"
+            >
+              {{ role }}
+            </span>
+          </div>
+          
+          <div class="user-actions">
+            <button class="action-btn edit" @click="editUser(user)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              <span>Edit</span>
+            </button>
+            <button v-if="user.active" class="action-btn deactivate" @click="toggleUserActive(user)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              <span>Deactivate</span>
+            </button>
+            <button v-else class="action-btn activate" @click="toggleUserActive(user)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              <span>Activate</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   
         <div class="pagination">
-          <span class="pagination-info">displaying page {{ currentPage }} of {{ totalPages }}</span>
           <button class="pagination-btn first" @click="goToPage(1)" :disabled="currentPage === 1">First</button>
           <button class="pagination-btn prev" @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">«</button>
           <template v-for="page in displayedPages" :key="page">
@@ -220,7 +289,7 @@
             id: 1,
             name: 'Taras Rozales',
             email: 'taras@example.com',
-            avatar: '@/assets/Avatar.png',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Manager', 'Admin', 'Editor'],
             lastLoggedIn: true,
             status: 'Available',
@@ -231,7 +300,7 @@
             id: 2,
             name: 'Vernon Nepdayshvk',
             email: 'vernon@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Manager', 'Admin'],
             lastLoggedIn: false,
             status: 'Busy',
@@ -242,7 +311,7 @@
             id: 3,
             name: 'Tylan Collins',
             email: 'tylan@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Admin', 'Editor'],
             lastLoggedIn: false,
             status: 'Available',
@@ -253,7 +322,7 @@
             id: 4,
             name: 'Adeeva Apsharlie',
             email: 'adeeva@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Admin', 'Editor'],
             lastLoggedIn: true,
             status: 'Busy',
@@ -264,7 +333,7 @@
             id: 5,
             name: 'Adriana Hejlm',
             email: 'adriana@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Manager'],
             lastLoggedIn: false,
             status: 'Available',
@@ -275,7 +344,7 @@
             id: 6,
             name: 'Szalvko Bezukinds',
             email: 'szalvko@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Editor'],
             lastLoggedIn: false,
             status: 'Busy',
@@ -286,7 +355,7 @@
             id: 7,
             name: 'Uteh Isadev',
             email: 'uteh@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Editor'],
             lastLoggedIn: true,
             status: 'Available',
@@ -297,7 +366,7 @@
             id: 8,
             name: 'Noell El-Ayen',
             email: 'noell@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Editor'],
             lastLoggedIn: false,
             status: 'Busy',
@@ -308,7 +377,7 @@
             id: 9,
             name: 'Jane Smith',
             email: 'jane@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Admin'],
             lastLoggedIn: false,
             status: 'Available',
@@ -319,7 +388,7 @@
             id: 10,
             name: 'John Doe',
             email: 'john@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Manager', 'Editor'],
             lastLoggedIn: true,
             status: 'Busy',
@@ -330,7 +399,7 @@
             id: 11,
             name: 'Emily Johnson',
             email: 'emily@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Editor'],
             lastLoggedIn: false,
             status: 'Available',
@@ -341,7 +410,7 @@
             id: 12,
             name: 'Michael Brown',
             email: 'michael@example.com',
-            avatar: '/api/placeholder/40/40',
+            avatar: require('@/assets/Avatar.png'),
             roles: ['Admin'],
             lastLoggedIn: true,
             status: 'Busy',
@@ -494,6 +563,109 @@
   </script>
   
   <style>
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .header-left {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .user-profile {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0.75rem;
+  }
+
+  .logo-name {
+    display: none; /* Hide logo text on very small screens */
+  }
+
+  .sidebar-logo2 {
+    height: 24px;
+    max-width: 24px;
+  }
+}
+
+.back-to-dashboard {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  color: #ff3e3e;
+  border: 1px solid rgba(255, 62, 62, 0.2);
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  width: 40px; /* Fixed width for icon */
+  text-decoration: none !important;
+  font-size: 0.8rem;
+}
+
+.back-to-dashboard i {
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.back-to-dashboard .back-text {
+  white-space: nowrap;
+  opacity: 0;
+  width: 0;
+  transition: all 0.3s ease;
+  margin-left: 0;
+}
+
+.back-to-dashboard:hover {
+  width: 200px; /* Expanded width */
+  background-color: rgba(255, 62, 62, 0.1);
+}
+
+.back-to-dashboard:hover .back-text {
+  opacity: 1;
+  width: auto;
+  margin-right: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .back-to-dashboard {
+    width: 40px;
+  }
+
+  .back-to-dashboard:hover {
+    width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-to-dashboard {
+    width: 40px;
+  }
+
+  .back-to-dashboard:hover {
+    width: 150px;
+  }
+}
+
   * {
     box-sizing: border-box;
     margin: 0;
@@ -533,6 +705,22 @@
     font-size: 1.125rem;
     color: #ff3e3e;
   }
+
+  .logo {
+      display: flex;
+      align-items: center;
+      
+      img {
+        height: 40px;
+        margin-right: 10px;
+      }
+  
+      span {
+        font-weight: 700;
+        color : red;
+        -webkit-background-clip: text;
+      }
+    }
   
   .user-profile {
     display: flex;
@@ -961,9 +1149,147 @@
   }
 
   .sidebar-logo2 {
-  height: 120px;
-  max-width: 130px;
+  height: 30px;
+  max-width: 30px;
   object-fit: contain;
   transition: opacity 0.3s ease;
 }
+
+.user-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+@media (max-width: 768px) {
+  .desktop-view {
+    display: none;
+  }
+
+  .mobile-view {
+    display: block;
+  }
+
+  .user-card {
+    background-color: #252525;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .user-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 1rem;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #444;
+  }
+
+  .user-name {
+    font-weight: 600;
+    color: #f5f5f5;
+  }
+
+  .user-email {
+    color: #999;
+    font-size: 0.875rem;
+  }
+
+  .user-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .user-roles {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .user-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-view {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+/* Additional responsive adjustments */
+@media (max-width: 480px) {
+  .header {
+    padding: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .back-to-dashboard {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .logo-name {
+    display: none; /* Optional: hide logo text on very small screens */
+  }
+
+  .sidebar-logo2 {
+    max-width: 24px;
+    max-height: 24px;
+  }
+
+  .user-name {
+    font-size: 14px;
+  }
+}
+
   </style>
