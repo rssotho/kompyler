@@ -81,7 +81,7 @@
             </div>
           </div>
           
-          <div class="card-content">
+          <div class="card-content px-5">
             <div class="stats-grid">
               <div class="stat-item">
                 <div class="stat-icon total">
@@ -1158,7 +1158,7 @@ td {
   font-size: 0.875rem;
 }
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #ff3333;
 }
@@ -1457,4 +1457,47 @@ td {
   color: #f1c40f;
   border: 1px solid rgba(241, 196, 15, 0.2);
 }
+
+
+
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); /* Adjust min-width as needed */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%; /* Ensure full width */
+  justify-content: center; /* Center grid items */
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: linear-gradient(145deg, #1c1c1c 0%, #141414 100%);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 0, 0, 0.1);
+  width: 100%; /* Ensure full width of grid cell */
+  max-width: 300px; /* Optional: set a max-width */
+  margin: 0 auto; /* Center within grid cell */
+}
+
+.stat-item.team {
+  grid-column: span 2;
+  max-width: 100%; /* Full width for team item */
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr; /* Single column on smaller screens */
+  }
+
+  .stat-item.team {
+    grid-column: span 1; /* Reset team item to single column */
+  }
+
+  
+}
+
 </style>

@@ -98,30 +98,6 @@
       </div>
     </div>
 
-    <!-- Modal for Settings -->
-    <modal v-if="showSettingsModal" @close="showSettingsModal = false">
-      <template #header>
-        <h3>Settings</h3>
-      </template>
-      <template #body>
-        <div>
-          <label for="setting1">Setting 1</label>
-          <select id="setting1">
-            <option value="option1">Option 1</option>
-            <option value="option2">Option 2</option>
-          </select>
-          <label for="setting2">Setting 2</label>
-          <select id="setting2">
-            <option value="option1">Option 1</option>
-            <option value="option2">Option 2</option>
-          </select>
-        </div>
-      </template>
-      <template #footer>
-        <button @click="showSettingsModal = false">Close</button>
-      </template>
-    </modal>
-
     <slot></slot>
   </div>
 </template>
@@ -135,26 +111,25 @@ export default {
       isDarkMode: false,
       isMobile: false,
       currentRoute: '',
-      expandedDropdowns: [], // Tracks which dropdowns are expanded
-      mobileExpanded: [], // Tracks which mobile dropdowns are expanded
-      showSettingsModal: false, // Controls the visibility of the settings modal
+      expandedDropdowns: [], 
+      mobileExpanded: [], 
       hasMoreItemsLeft: false,
       hasMoreItemsRight: true,
       navItems: [
         { title: 'Dashboard', icon: 'fas fa-tachometer-alt', route: '/dashboard' },
         { title: 'Create Task', icon: 'fas fa-tasks', route: '/create-task' },
         { title: 'Evaluate', icon: 'fas fa-users', route: '/evaluate-task' },
+        { title: 'View', icon: 'fas fa-eye', route: '/view-evaluations' },
+        { title: 'Export', icon: 'fa-solid fa-download', route: '/export' },
         { 
-          title: 'System Management', 
+          title: 'Management', 
           icon: 'fas fa-cog', 
           dropdown: true,
           dropdownItems: [
             { title: 'Manage users', icon: 'fas fa-user-cog', route: '/ManageUsers' },
             { title: 'Profile', icon: 'fas fa-sliders-h', route: '/Profile' }
           ]
-        },
-        { title: 'View', icon: 'fas fa-eye', route: '/view-evaluations' },
-        { title: 'Export', icon: 'fa-solid fa-download', route: '/export' }
+        }
       ]
     };
   },
@@ -163,7 +138,7 @@ export default {
       let items = [];
       this.navItems.forEach(item => {
         if (item.dropdown) {
-          items.push(item); // Add main item
+          items.push(item);
         } else {
           items.push(item);
         }
@@ -187,13 +162,19 @@ export default {
     toggleSidebar() {
       this.isCollapsed = !this.isCollapsed;
       localStorage.setItem('sidebarCollapsed', this.isCollapsed);
+      
+      // Close any open dropdowns when sidebar is collapsed
+      if (this.isCollapsed) {
+        this.expandedDropdowns = [];
+      }
     },
     toggleDropdown(index) {
       const expandedIndex = this.expandedDropdowns.indexOf(index);
       if (expandedIndex === -1) {
-        this.expandedDropdowns.push(index);
+        // Close other dropdowns if any are open
+        this.expandedDropdowns = [index];
       } else {
-        this.expandedDropdowns.splice(expandedIndex, 1);
+        this.expandedDropdowns = [];
       }
     },
     checkScreenSize() {
@@ -203,9 +184,15 @@ export default {
     },
     navigateTo(route) {
       this.$router.push(route);
+      
+      // Close mobile dropdown after navigation
+      if (this.isMobile) {
+        this.mobileExpanded = [];
+      }
     },
     logout() {
       console.log('Logging out...');
+      // Add your logout logic here
     },
     checkScrollPosition() {
       if (!this.$refs.mobileNav) return;
@@ -217,17 +204,43 @@ export default {
     toggleMobileDropdown(item) {
       const index = this.mobileExpanded.indexOf(item.title);
       if (index === -1) {
-        this.mobileExpanded.push(item.title);
+        // Close other mobile dropdowns
+        this.mobileExpanded = [item.title];
       } else {
-        this.mobileExpanded.splice(index, 1);
+        this.mobileExpanded = [];
       }
     },
     handleRouteChange(to) {
+      // For desktop
       this.navItems.forEach((item, index) => {
         if (item.dropdown) {
           const containsRoute = item.dropdownItems.some(dropItem => dropItem.route === to.path);
-          if (containsRoute && !this.expandedDropdowns.includes(index)) {
-            this.expandedDropdowns.push(index);
+          if (containsRoute) {
+            if (!this.expandedDropdowns.includes(index)) {
+              this.expandedDropdowns.push(index);
+            }
+          } else {
+            const dropdownIndex = this.expandedDropdowns.indexOf(index);
+            if (dropdownIndex !== -1) {
+              this.expandedDropdowns.splice(dropdownIndex, 1);
+            }
+          }
+        }
+      });
+
+      // For mobile
+      this.mobileNavItems.forEach(item => {
+        if (item.dropdown) {
+          const containsRoute = item.dropdownItems.some(dropItem => dropItem.route === to.path);
+          if (containsRoute) {
+            if (!this.mobileExpanded.includes(item.title)) {
+              this.mobileExpanded.push(item.title);
+            }
+          } else {
+            const mobileDropdownIndex = this.mobileExpanded.indexOf(item.title);
+            if (mobileDropdownIndex !== -1) {
+              this.mobileExpanded.splice(mobileDropdownIndex, 1);
+            }
           }
         }
       });
@@ -374,12 +387,6 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 130px;
-}
-
-.nav-text.system-text {
-  font-size: 11px; /* Special smaller font only for System Management */
-  letter-spacing: -0.3px; /* Condense the text */
-  max-width: 150px; /* More space for this text */
 }
 
 .sidebar.collapsed .nav-text {
@@ -603,6 +610,74 @@ export default {
   max-width: 120px;
 }
 
+.sidebar.collapsed .dropdown-container.side-dropdown {
+  position: fixed; /* Change from absolute to fixed */
+  left: 68px; /* Adjust to match collapsed sidebar width */
+  top: auto; /* Remove fixed top positioning */
+  bottom: auto; /* Remove fixed bottom positioning */
+  width: 200px;
+  margin: 0;
+  background-color: #1a1a1a;
+  border-radius: 0 10px 10px 0;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.sidebar.collapsed .dropdown-container.side-dropdown .dropdown-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  margin: 4px 0; /* Add slight margin between items */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px; /* Add rounded corners */
+}
+
+.sidebar.collapsed .dropdown-container.side-dropdown .dropdown-item:hover {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.sidebar.collapsed .dropdown-container.side-dropdown .dropdown-item.active {
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%);
+}
+
+.sidebar.collapsed .dropdown-container.side-dropdown .dropdown-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 24px;
+  font-size: 14px;
+  color: #ff3333;
+  margin-right: 10px; /* Add some spacing between icon and text */
+}
+
+.sidebar.collapsed .dropdown-container.side-dropdown .dropdown-text {
+  margin-left: 0; /* Remove left margin as we added margin to icon */
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+/* Additional improvements for positioning and visibility */
+.sidebar.collapsed .nav-item-container {
+  position: relative;
+}
+
+.sidebar.collapsed .nav-item-container:hover .dropdown-container.side-dropdown {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
 /* Collapsed state dropdown */
 .sidebar.collapsed .dropdown-container {
   position: absolute;
@@ -646,5 +721,44 @@ export default {
   max-height: 300px;
   opacity: 1;
   transform: translateY(0);
+}
+
+.dropdown-text {
+  margin-left: 10px;
+  font-size: 12px; /* Keep the same font size as nav-text */
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px; /* Adjust as necessary */
+}
+
+
+/* Mobile Dropdown Specific Styles */
+.mobile-dropdown {
+  position: fixed;
+  bottom: 64px; /* Height of mobile nav */
+  left: 0;
+  right: 0;
+  background-color: #000000;
+  z-index: 1001;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-dropdown .dropdown-item {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-dropdown .dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.mobile-dropdown .dropdown-item:hover {
+  background-color: rgba(255, 0, 0, 0.1);
 }
 </style>
