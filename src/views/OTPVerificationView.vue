@@ -60,7 +60,7 @@
             />
           </div>
           
-          <button class="submit-button" @click="$router.push('/dashboard')" :disabled="!isComplete">
+          <button class="submit-button" @click="$router.push('/team-selection')" :disabled="!isComplete">
             Verify
           </button>
           

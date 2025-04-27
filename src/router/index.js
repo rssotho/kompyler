@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '@/views/LoginView.vue';
 import SignupView from '@/views/SignupView.vue';
 import OTPVerificationView from '@/views/OTPVerificationView.vue';
+import TeamSelection from '@/views/TeamSelection.vue';
 
 const routes = [
   {
@@ -63,6 +64,12 @@ const routes = [
     path: '/verify-otp',
     name: 'verify-otp',
     component: OTPVerificationView
+  },
+  { 
+    path: '/team-selection',
+    name: 'team-selection',
+    component: TeamSelection
+
   }
 ];
 

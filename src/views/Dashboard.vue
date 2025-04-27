@@ -277,52 +277,7 @@
       </div>
 
       <!-- My Top Campaigns Section -->
-      <div class="top-campaigns-section">
-        <div class="section-header">
-          <h2>My Top Campaigns</h2>
-          <div class="pagination">
-            <span>02 of 5</span>
-            <div class="pagination-controls">
-              <button><i class="fas fa-chevron-left"></i></button>
-              <button><i class="fas fa-chevron-right"></i></button>
-            </div>
-          </div>
-        </div>
-        <div class="campaign-cards">
-          <div class="campaign-card">
-            <div class="card-header">
-              <span class="bullet">•</span>
-              <span class="campaign-name">Pela Design</span>
-              <button class="menu-btn"><i class="fas fa-ellipsis"></i></button>
-            </div>
-            <div class="card-content">
-              <div class="campaign-metrics">
-                <div class="followers-count">3,074 Followers</div>
-                <div class="growth">+ 9.21</div>
-              </div>
-              <div class="followers-avatars">
-                <!-- Follower avatars -->
-              </div>
-            </div>
-          </div>
-          <div class="campaign-card">
-            <div class="card-header">
-              <span class="bullet">•</span>
-              <span class="campaign-name">Elevar Ads</span>
-              <button class="menu-btn"><i class="fas fa-ellipsis"></i></button>
-            </div>
-            <div class="card-content">
-              <div class="campaign-metrics">
-                <div class="followers-count">2,931 Followers</div>
-                <div class="growth">+ 7.59</div>
-              </div>
-              <div class="followers-avatars">
-                <!-- Follower avatars -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
   </div>
 </template>
