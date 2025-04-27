@@ -1,0 +1,32 @@
+// src/styles/variables.scss
+:root {
+    // Color Palette
+    --primary-black: #121212;
+    --secondary-black: #1E1E1E;
+    --primary-red: #FF0000;
+    --accent-red: #8B0000;
+    --text-white: #FFFFFF;
+    --gray: #333333;
+  
+    // Typography
+    --font-primary: 'Inter', sans-serif;
+    --transition-speed: 0.3s;
+  }
+  
+  // Global SCSS mixins or variables can go here
+  @mixin flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  @mixin responsive-text {
+    @media (max-width: 1200px) {
+      font-size: 0.9rem;
+    }
+  
+    @media (max-width: 768px) {
+      font-size: 0.8rem;
+    }
+  }
+  
