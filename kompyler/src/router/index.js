@@ -1,10 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import LoginView from '@/views/LoginView.vue';
+import SignupView from '@/views/SignupView.vue';
+import OTPVerificationView from '@/views/OTPVerificationView.vue';
+import TeamSelection from '@/views/TeamSelection.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Login',
-    component: () => import('@/views/login.vue')
+    component: () => import('@/views/LoginView.vue')
   },
   {
     path: '/dashboard',
@@ -40,8 +44,33 @@ const routes = [
     path: '/ManageUsers',
     name: 'ManageUsers',
     component: () => import('@/views/ManageUsers.vue')
+  },
+  {
+    path: '/SignupView',
+    name: 'SignupView',
+    component: SignupView
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: SignupView
+  },
+  {
+    path: '/verify-otp',
+    name: 'verify-otp',
+    component: OTPVerificationView
+  },
+  { 
+    path: '/team-selection',
+    name: 'team-selection',
+    component: TeamSelection
+
   }
-  
 ];
 
 const router = createRouter({
