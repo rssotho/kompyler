@@ -5,7 +5,7 @@
       <div class="logo">
         <img src="@/assets/Kompyler.png" alt="Logo" />
       </div>
-      <div class="back-link" @click="goBack">
+      <div class="back-link" @click="$router.push('/landing-page')">
         <span>Visit website</span>
         <i class="fas fa-arrow-right"></i>
       </div>
@@ -40,90 +40,58 @@
         <!-- OTP Verification Section -->
         <div class="otp-section" v-if="showOTPSection">
           <h1>Verify Your Email</h1>
-          <p class="otp-instructions">We've sent a 6-digit code to {{ form.email }}. Please enter it below:</p>
-          
-          <div v-if="otpErrorMessage" class="error-message">
-            {{ otpErrorMessage }}
-          </div>
+          <p class="otp-instructions">We've sent a 6-digit code to example@email.com</p>
           
           <div class="otp-input-container">
             <input 
-              v-for="(digit, index) in otpDigits" 
+              v-for="index in 6" 
               :key="index"
-              v-model="otpDigits[index]"
               type="text" 
               maxlength="1"
-              @input="handleOtpInput(index, $event)"
-              @keydown.delete="handleOtpDelete(index, $event)"
-              @paste.prevent="handleOtpPaste($event)"
-              ref="otpInputs"
               class="otp-input"
             />
           </div>
           
-          <button 
-            class="submit-button" 
-            @click="verifyOTP"
-            :disabled="!isOtpComplete"
-          >
-            Verify
-          </button>
+          <button class="submit-button">Verify</button>
           
           <p class="resend-otp">
             Didn't receive a code? 
-            <span class="resend-link" @click="resendOTP" v-if="otpTimeLeft <= 0">Resend</span>
-            <span v-else>Resend available in {{ otpTimeLeft }}s</span>
+            <span class="resend-link">Resend</span>
           </p>
-          
         </div>
 
-        <!-- Regular Auth Section -->
+        <!-- Signup Form -->
         <div v-else>
-          <h1>{{ isLogin ? 'Log in to your account' : 'Create an account' }}</h1>
+          <h1>Create an account</h1>
           <p class="toggle-text">
-            {{ isLogin ? 'Don\'t have an account?' : 'Already have an account?' }}
-            <span class="toggle-link" @click="toggleAuthMode">{{ isLogin ? 'Sign up' : 'Log in' }}</span>
+            Already have an account?
+            <span class="toggle-link" @click="$router.push('/login')">Log in</span>
           </p>
 
-          <div v-if="successMessage" class="success-message">
-            {{ successMessage }}
-          </div>
-
-          <div v-if="errorMessage" class="error-message">
-            {{ errorMessage }}
-          </div>
-
-          <form @submit.prevent="submitForm">
-            <div class="name-fields" v-if="!isLogin">
+          <form @submit.prevent>
+            <div class="name-fields">
               <div class="form-group">
-                <input type="text" id="firstName" v-model="form.firstName" placeholder="First name" required />
+                <input type="text" id="firstName" placeholder="First name" required />
               </div>
               <div class="form-group">
-                <input type="text" id="lastName" v-model="form.lastName" placeholder="Last name" required />
+                <input type="text" id="lastName" placeholder="Last name" required />
               </div>
             </div>
 
             <div class="form-group">
-              <input type="email" id="email" v-model="form.email" placeholder="Email" required />
+              <input type="email" id="email" placeholder="Email" required />
             </div>
 
             <div class="form-group password-field">
-              <input 
-                :type="showPassword ? 'text' : 'password'" 
-                id="password" 
-                v-model="form.password" 
-                placeholder="Enter your password" 
-                required
-                minlength="6"
-              />
-              <button type="button" class="password-toggle" @click="showPassword = !showPassword">
-                <i :class="['fas', showPassword ? 'fa-eye-slash' : 'fa-eye']"></i>
+              <input type="password" id="password" placeholder="Enter your password" required minlength="6" />
+              <button type="button" class="password-toggle">
+                <i class="fas fa-eye"></i>
               </button>
             </div>
 
-            <div class="form-group checkbox-group" v-if="!isLogin">
+            <div class="form-group checkbox-group">
               <label class="checkbox-container">
-                <input type="checkbox" v-model="form.agreeToTerms" required />
+                <input type="checkbox" required />
                 <span class="checkmark"></span>
                 <span class="checkbox-text">
                   I agree to the <a href="#" class="terms-link">Terms & Conditions</a>
@@ -131,9 +99,7 @@
               </label>
             </div>
 
-            <button type="submit" class="submit-button" :disabled="!isFormValid">
-              {{ isLogin ? 'Log in' : 'Create account' }}
-            </button>
+            <button type="submit" class="submit-button" @click="$router.push('/verify-otp')">Create account</button>
           </form>
 
           <div class="social-auth">
@@ -157,19 +123,11 @@
 
 <script>
 export default {
-  name: 'AuthComponent',
+  name: 'SignupView',
   data() {
     return {
-      isLogin: false,
-      showPassword: false,
       isMobile: false,
-      form: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        agreeToTerms: false
-      },
+      showOTPSection: false,
       currentSlide: 0,
       slides: [
         {
@@ -191,304 +149,41 @@ export default {
           description: 'Real stakeholder insights.'
         }
       ],
-      slideInterval: null,
-      users: [],
-      currentUser: null,
-      successMessage: '',
-      errorMessage: '',
-      // OTP related data
-      showOTPSection: false,
-      otpDigits: ['', '', '', '', '', ''],
-      otpCode: '',
-      otpErrorMessage: '',
-      otpResendCount: 0,
-      otpTimer: null,
-      otpTimeLeft: 0
-    };
-  },
-  computed: {
-    isFormValid() {
-      if (this.isLogin) {
-        return this.form.email && this.form.password;
-      } else {
-        return this.form.firstName && this.form.lastName &&
-               this.form.email && this.form.password &&
-               this.form.agreeToTerms;
-      }
-    },
-    isOtpComplete() {
-      return this.otpDigits.every(digit => digit !== '');
+      slideInterval: null
     }
   },
   mounted() {
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize);
     this.startCarousel();
-    this.loadUsers();
-    this.checkAuth();
   },
   beforeDestroy() {
-    clearInterval(this.otpTimer);
     window.removeEventListener('resize', this.checkScreenSize);
     this.stopCarousel();
   },
   methods: {
-    hashPassword(password) {
-      let hash = 0;
-      for (let i = 0; i < password.length; i++) {
-        const char = password.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash |= 0;
-      }
-      return hash.toString();
-    },
-
-    loadUsers() {
-      const storedUsers = localStorage.getItem('kompyler_users');
-      this.users = storedUsers ? JSON.parse(storedUsers) : [];
-    },
-
-    saveUsers() {
-      localStorage.setItem('kompyler_users', JSON.stringify(this.users));
-    },
-
-    toggleAuthMode() {
-      this.isLogin = !this.isLogin;
-      this.resetMessages();
-      this.form = {
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        agreeToTerms: false
-      };
-    },
-
-    resetMessages() {
-      this.successMessage = '';
-      this.errorMessage = '';
-      this.otpErrorMessage = '';
-    },
-
     checkScreenSize() {
       this.isMobile = window.innerWidth < 768;
     },
-
-    submitForm() {
-      if (!this.isFormValid) return;
-      this.resetMessages();
-
-      if (this.isLogin) {
-        this.loginUser();
-      } else {
-        this.registerUser();
-      }
-    },
-
-    registerUser() {
-      const userExists = this.users.some(user => user.email === this.form.email);
-      if (userExists) {
-        this.errorMessage = 'User with this email already exists';
-        return;
-      }
-
-      const newUser = {
-        id: Date.now().toString(),
-        firstName: this.form.firstName,
-        lastName: this.form.lastName,
-        email: this.form.email,
-        password: this.hashPassword(this.form.password),
-        createdAt: new Date().toISOString(),
-        verified: false
-      };
-
-      this.users.push(newUser);
-      this.saveUsers();
-
-      // Generate and send OTP instead of showing success message
-      this.generateOTP();
-    },
-
-    loginUser() {
-      const user = this.users.find(u => u.email === this.form.email);
-
-      if (!user) {
-        this.errorMessage = 'User not found';
-        return;
-      }
-
-      if (user.password !== this.hashPassword(this.form.password)) {
-        this.errorMessage = 'Incorrect password';
-        return;
-      }
-
-      if (!user.verified) {
-        this.errorMessage = 'Please verify your email first';
-        this.form.email = user.email;
-        this.generateOTP();
-        return;
-      }
-
-      this.currentUser = user;
-      localStorage.setItem('kompyler_currentUser', JSON.stringify(user));
-
-      this.successMessage = 'Login successful! Redirecting...';
-      this.form = {
-        email: '',
-        password: ''
-      };
-
-      setTimeout(() => {
-        this.$router.push('/dashboard');
-      }, 2000);
-    },
-
-    checkAuth() {
-      const user = localStorage.getItem('kompyler_currentUser');
-      if (user) {
-        this.currentUser = JSON.parse(user);
-      }
-    },
-
-    goBack() {
-      this.$router.push('/landing-page');
-    },
-
     setSlide(index) {
       this.currentSlide = index;
       this.resetCarouselTimer();
     },
-
     nextSlide() {
       this.currentSlide = (this.currentSlide + 1) % this.slides.length;
     },
-
     startCarousel() {
       this.slideInterval = setInterval(this.nextSlide, 5000);
     },
-
     stopCarousel() {
       clearInterval(this.slideInterval);
     },
-
     resetCarouselTimer() {
       this.stopCarousel();
       this.startCarousel();
-    },
-
-    // OTP related methods
-    generateOTP() {
-    this.otpCode = '123456'; // Fixed OTP
-    console.log('Generated OTP:', this.otpCode); // For testing only
-    
-    // Show OTP section
-    this.showOTPSection = true;
-    this.startOTPTimer();
-    
-    // In a real app, you would send this OTP to the user's email
-    // Example: this.sendOTPEmail(this.form.email, this.otpCode);
-  },
-
-  verifyOTP() {
-    const enteredOTP = this.otpDigits.join('');
-    if (enteredOTP === this.otpCode) {
-      // OTP verification successful
-      this.successMessage = 'Email verified successfully!';
-      this.showOTPSection = false;
-      
-      // Mark user as verified
-      const userIndex = this.users.findIndex(u => u.email === this.form.email);
-      if (userIndex !== -1) {
-        this.users[userIndex].verified = true;
-        this.saveUsers();
-      }
-
-      setTimeout(() => {
-        this.isLogin = true;
-        this.successMessage = '';
-      }, 2000);
-    } else {
-      this.otpErrorMessage = 'Invalid verification code. Please try again.';
-    }
-  },
-    resendOTP() {
-      if (this.otpResendCount >= 3) {
-        this.otpErrorMessage = 'Maximum resend attempts reached. Please try again later.';
-        return;
-      }
-      
-      if (this.otpTimeLeft > 0) {
-        this.otpErrorMessage = `Please wait ${this.otpTimeLeft} seconds before requesting a new code.`;
-        return;
-      }
-      
-      this.generateOTP();
-      this.otpResendCount++;
-      this.otpErrorMessage = '';
-    },
-
-    backToRegistration() {
-      this.showOTPSection = false;
-      this.otpDigits = ['', '', '', '', '', ''];
-      this.otpErrorMessage = '';
-    },
-
-    startOTPTimer() {
-      this.otpTimeLeft = 60;
-      clearInterval(this.otpTimer);
-      this.otpTimer = setInterval(() => {
-        if (this.otpTimeLeft > 0) {
-          this.otpTimeLeft--;
-        } else {
-          clearInterval(this.otpTimer);
-        }
-      }, 1000);
-    },
-
-    handleOtpInput(index, event) {
-      const value = event.target.value;
-      
-      // Only allow numeric input
-      if (!/^\d*$/.test(value)) {
-        this.otpDigits[index] = '';
-        return;
-      }
-      
-      // Move to next input if a digit was entered
-      if (value && index < 5) {
-        this.$nextTick(() => {
-          this.$refs.otpInputs[index + 1].focus();
-        });
-      }
-      
-      // Auto-submit if last digit was entered
-      if (index === 5 && value && this.isOtpComplete) {
-        this.verifyOTP();
-      }
-    },
-
-    handleOtpDelete(index, event) {
-      if (!this.otpDigits[index] && index > 0) {
-        // Move to previous input if current is empty and backspace was pressed
-        this.$refs.otpInputs[index - 1].focus();
-      }
-    },
-
-    handleOtpPaste(event) {
-      const pasteData = event.clipboardData.getData('text');
-      const numbers = pasteData.replace(/\D/g, '').split('').slice(0, 6);
-      
-      if (numbers.length === 6) {
-        numbers.forEach((num, i) => {
-          this.otpDigits[i] = num;
-        });
-        this.$nextTick(() => {
-          this.$refs.otpInputs[5].focus();
-        });
-      }
     }
   }
-};
+}
 </script>
 
 <style scoped>
