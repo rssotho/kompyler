@@ -21,10 +21,7 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-<<<<<<< HEAD
 .env\
 .env/
 env\
 env/
-=======
->>>>>>> 3b6a62799c55f7963f6a1698ae1d798e0086e499
