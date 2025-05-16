@@ -11,8 +11,8 @@
       </div>
       <div class="carousel">
         <transition-group name="fade" tag="div" class="slides">
-          <div 
-            v-for="(slide, index) in slides" 
+          <div
+            v-for="(slide, index) in slides"
             :key="slide.id"
             v-show="currentSlide === index"
             class="slide"
@@ -24,8 +24,8 @@
           <p>{{ slides[currentSlide].description }}</p>
         </div>
         <div class="carousel-dots">
-          <span 
-            v-for="(slide, index) in slides" 
+          <span
+            v-for="(slide, index) in slides"
             :key="`dot-${slide.id}`"
             :class="['dot', { active: currentSlide === index }]"
             @click="setSlide(index)"
@@ -38,24 +38,46 @@
     <div class="form-section">
       <div class="form-container">
         <h1>Log in to your account</h1>
+        <!-- Add success and error message displays -->
+        <div v-if="success_message" class="success-message">
+          {{ success_message }}
+        </div>
+        <div v-if="show_error_message" class="error-message">
+          {{ error_message }}
+        </div>
         <p class="toggle-text">
           Don't have an account?
-          <span class="toggle-link" @click="$router.push('/signup')">Sign up</span>
+          <span class="toggle-link" @click="$router.push('/signup')"
+            >Sign up</span
+          >
         </p>
 
         <form @submit.prevent>
           <div class="form-group">
-            <input type="email" id="email" placeholder="Email" required />
+            <input
+              type="email"
+              id="email"
+              placeholder="Email"
+              v-model="login_data.email"
+            />
           </div>
 
           <div class="form-group password-field">
-            <input type="password" id="password" placeholder="Enter your password" required />
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              v-model="login_data.password"
+              required
+            />
             <button type="button" class="password-toggle">
               <i class="fas fa-eye"></i>
             </button>
           </div>
 
-          <button type="submit" class="submit-button" @click="$router.push('/verify-otp')">Log in</button>
+          <button type="submit" class="submit-button" @click="login">
+            Log in
+          </button>
         </form>
 
         <div class="social-auth">
@@ -77,8 +99,14 @@
 </template>
 
 <script>
+import $ from "jquery";
+import axios from "axios";
+import { set_token, set_user_details, get_token } from "@/router";
+
+const GLOBAL_URL = process.env.VUE_APP_GLOBAL_URL;
+
 export default {
-  name: 'LoginView',
+  name: "LoginView",
   data() {
     return {
       isMobile: false,
@@ -86,36 +114,104 @@ export default {
       slides: [
         {
           id: 1,
-          image: require('@/assets/login_1.png'),
-          title: 'Spend Less Time on Admin.',
-          description: 'More Time Getting Things Done.'
+          image: require("@/assets/login_1.png"),
+          title: "Spend Less Time on Admin.",
+          description: "More Time Getting Things Done.",
         },
         {
           id: 2,
-          image: require('@/assets/login_2.png'),
-          title: 'Tired of messy task reviews?',
-          description: 'Kompyler cleaned it up.'
+          image: require("@/assets/login_2.png"),
+          title: "Tired of messy task reviews?",
+          description: "Kompyler cleaned it up.",
         },
         {
           id: 3,
-          image: require('@/assets/login_3.png'),
-          title: 'Real task evaluations.',
-          description: 'Real stakeholder insights.'
-        }
-      ],
-      slideInterval: null
-    }
+          image: require("@/assets/login_3.png"),
+          title: "Real task evaluations.",
+          description: "Real stakeholder insights.",
+        },
+],
+      slideInterval: null,
+
+      login_data: {
+        email: "",
+        password: "",
+      },
+      success_message: '',
+      error_message: '',
+      show_error_message: false,
+    };
   },
   mounted() {
     this.checkScreenSize();
-    window.addEventListener('resize', this.checkScreenSize);
+    window.addEventListener("resize", this.checkScreenSize);
     this.startCarousel();
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.checkScreenSize);
+    window.removeEventListener("resize", this.checkScreenSize);
     this.stopCarousel();
   },
   methods: {
+    // Integration Functions
+    async login() {
+      var login_url = `${GLOBAL_URL}/system_management/user_login/`;
+      var header = {
+        "Content-Type": "application/json",
+      };
+
+      try {
+        var response = await axios.post(login_url, this.login_data, { headers: header });
+        var response_data = JSON.parse(response.data);
+
+        if (response_data.status == "success") {
+          this.success_message = response_data.message;
+          this.show_error_message = false;
+          
+          set_token(response_data.data.token);
+          set_user_details(response_data.data.user_details);
+          await this.create_otp();
+          this.$router.push("/verify-otp/");
+        } else {
+          this.error_message = response_data.message;
+          this.show_error_message = true;
+          this.success_message = '';
+        }
+      } catch (error) {
+        this.success_message = '';
+        if (error.response) {
+          // Handle API error responses
+          this.error_message = error.response.data.message || "Invalid credentials";
+        } else if (error.request) {
+          this.error_message = "Network error. Please check your connection.";
+        } else {
+          this.error_message = "An error occurred. Please try again.";
+        }
+        this.show_error_message = true;
+      }
+    },
+
+    async create_otp() {
+      var login_url = `${GLOBAL_URL}/system_management/create_otp/`;
+      var header = {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get_token()}`,
+      };
+      try {
+        var response = await axios.post(login_url, {}, { headers: header });
+        var response_data = JSON.parse(response.data);
+
+        if (response_data.status == "success") {
+          this.success_message = "OTP created successfully";
+        } else {
+          this.error_message = response_data.message || "Failed to create OTP";
+          this.show_error_message = true;
+        }
+      } catch (error) {
+        this.error_message = "Failed to create OTP: " + (error.message || "Unknown error");
+        this.show_error_message = true;
+      }
+    },
+    // End Integration Functions
     checkScreenSize() {
       this.isMobile = window.innerWidth < 768;
     },
@@ -135,9 +231,9 @@ export default {
     resetCarouselTimer() {
       this.stopCarousel();
       this.startCarousel();
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -499,20 +595,24 @@ input:focus {
 
 /* Message Styles */
 .success-message {
+  margin: 10px 0;
   padding: 10px;
-  margin-bottom: 20px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: rgba(76, 175, 80, 0.1);
+  border: 1px solid #4CAF50;
   border-radius: 4px;
+  color: #4CAF50;
+  font-size: 14px;
   text-align: center;
 }
 
 .error-message {
+  margin: 10px 0;
   padding: 10px;
-  margin-bottom: 20px;
-  background-color: #f44336;
-  color: white;
+  background-color: rgba(255, 51, 51, 0.1);
+  border: 1px solid #ff3333;
   border-radius: 4px;
+  color: #ff3333;
+  font-size: 14px;
   text-align: center;
 }
 
@@ -578,10 +678,12 @@ input:focus {
 }
 
 /* Animations */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
@@ -590,29 +692,29 @@ input:focus {
   .auth-container {
     flex-direction: column;
   }
-  
+
   .form-section {
     padding: 20px;
   }
-  
+
   .form-container {
     max-width: 100%;
   }
-  
+
   .name-fields {
     flex-direction: column;
     gap: 0;
   }
-  
+
   h1 {
     font-size: 24px;
     text-align: center;
   }
-  
+
   .toggle-text {
     text-align: center;
   }
-  
+
   /* Adjust OTP inputs for mobile */
   .otp-input {
     width: 35px;

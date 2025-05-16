@@ -265,7 +265,7 @@ def change_password(request):
     return response
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 @roles_required(
     constant.CUSTOMER,
     constant.SYSTEM_ADMIN,

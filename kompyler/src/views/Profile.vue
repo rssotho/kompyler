@@ -2,16 +2,20 @@
   <div class="profile-container">
     <header class="header">
       <div class="logo">
-        <img src="@/assets/Kompyler_logo.svg" alt="Komplyer Logo" class="logo-image">
+        <img
+          src="@/assets/Kompyler_logo.svg"
+          alt="Komplyer Logo"
+          class="logo-image"
+        />
         <p class="profile-logo">KOMPYLER</p>
       </div>
       <div class="header-actions">
-        <router-link 
-  to="/dashboard" 
-  class="btn-outline md:inline-block flex items-center space-x-2 no-underline dashboard-btn"
->
-  <span>Back to Dashboard</span>
-</router-link>
+        <router-link
+          to="/dashboard"
+          class="btn-outline md:inline-block flex items-center space-x-2 no-underline dashboard-btn"
+        >
+          <span>Back to Dashboard</span>
+        </router-link>
 
         <div class="user-menu">
           <div class="avatar">JD</div>
@@ -22,14 +26,28 @@
     <div class="banner">
       <div class="banner-content">
         <h1>Manage Your Profile</h1>
-        <p>Update your information to help us personalize your task evaluations</p>
+        <p>
+          Update your information to help us personalize your task evaluations
+        </p>
       </div>
     </div>
 
     <div class="tabs-container">
       <div class="tabs">
-        <button class="tab" :class="{ active: activeTab === 'profile' }" @click="activeTab = 'profile'">Profile</button>
-        <button class="tab" :class="{ active: activeTab === 'contract' }" @click="activeTab = 'contract'">Contract</button>
+        <button
+          class="tab"
+          :class="{ active: activeTab === 'profile' }"
+          @click="activeTab = 'profile'"
+        >
+          Profile
+        </button>
+        <button
+          class="tab"
+          :class="{ active: activeTab === 'contract' }"
+          @click="activeTab = 'contract'"
+        >
+          Contract
+        </button>
       </div>
     </div>
 
@@ -41,7 +59,7 @@
               <div class="section-header">
                 <h2>Personal Information</h2>
               </div>
-              
+
               <div class="form-grid">
                 <div class="form-group">
                   <label>First Name<span class="required">*</span></label>
@@ -89,12 +107,12 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="profile-section">
               <div class="section-header">
                 <h2>Address Information</h2>
               </div>
-              
+
               <div class="form-grid">
                 <div class="form-group">
                   <label>Country</label>
@@ -109,45 +127,80 @@
                 </div>
                 <div class="form-group">
                   <label>Province/State</label>
-                  <input type="text" v-model="profile.state" placeholder="Enter province or state" />
+                  <input
+                    type="text"
+                    v-model="profile.state"
+                    placeholder="Enter province or state"
+                  />
                 </div>
                 <div class="form-group">
                   <label>City</label>
-                  <input type="text" v-model="profile.city" placeholder="Enter city" />
+                  <input
+                    type="text"
+                    v-model="profile.city"
+                    placeholder="Enter city"
+                  />
                 </div>
                 <div class="form-group">
                   <label>Postal Code</label>
-                  <input type="text" v-model="profile.postalCode" placeholder="Enter postal code" />
+                  <input
+                    type="text"
+                    v-model="profile.postalCode"
+                    placeholder="Enter postal code"
+                  />
                 </div>
                 <div class="form-group full-width">
                   <label>Street Address</label>
-                  <input type="text" v-model="profile.streetAddress" placeholder="Enter street address" />
+                  <input
+                    type="text"
+                    v-model="profile.streetAddress"
+                    placeholder="Enter street address"
+                  />
                 </div>
               </div>
             </div>
-            
+
             <div class="action-buttons">
-              <button class="btn-primary" @click="saveChanges">Save Changes</button>
+              <button class="btn-primary" @click="saveChanges">
+                Save Changes
+              </button>
               <button class="btn-outline">Back to Dashboard</button>
             </div>
           </div>
-          
+
           <div class="profile-sidebar">
             <div class="profile-card">
               <div class="profile-image-container">
                 <div class="profile-image">
-                  <img :src="profile.avatar || '@/assets/Avatar.png'" alt="Profile" />
+                  <img
+                    :src="profile.avatar || '@/assets/Avatar.png'"
+                    alt="Profile"
+                  />
                   <button class="edit-photo-btn" @click="uploadPhoto">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                      ></path>
                       <circle cx="12" cy="13" r="4"></circle>
                     </svg>
                   </button>
                 </div>
               </div>
-              
+
               <div class="profile-info">
-                <h3 class="profile-name">{{ profile.firstName }} {{ profile.lastName }}</h3>
+                <h3 class="profile-name">
+                  {{ profile.firstName }} {{ profile.lastName }}
+                </h3>
                 <p class="profile-role">{{ getRoleTitle() }}</p>
                 <div class="profile-stats">
                   <div class="stat">
@@ -160,24 +213,45 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="card-section performance">
                 <h4>Performance Metrics</h4>
-                <div class="metric" v-for="(metric, index) in performanceMetrics" :key="index">
+                <div
+                  class="metric"
+                  v-for="(metric, index) in performanceMetrics"
+                  :key="index"
+                >
                   <div class="metric-label">{{ metric.label }}</div>
                   <div class="progress-bar">
-                    <div class="progress" :style="{ width: metric.value + '%' }"></div>
+                    <div
+                      class="progress"
+                      :style="{ width: metric.value + '%' }"
+                    ></div>
                   </div>
                   <div class="metric-value">{{ metric.value }}%</div>
                 </div>
               </div>
-              
+
               <div class="card-section">
                 <h4>Upcoming Tasks</h4>
                 <div class="task-list">
-                  <div class="task-item" v-for="(task, index) in upcomingTasks" :key="index">
+                  <div
+                    class="task-item"
+                    v-for="(task, index) in upcomingTasks"
+                    :key="index"
+                  >
                     <div class="task-icon" :class="'priority-' + task.priority">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="8" x2="12" y2="12"></line>
                         <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -191,15 +265,44 @@
                 </div>
                 <button class="view-all-btn">View All Tasks</button>
               </div>
-              
+
               <div class="card-section">
                 <h4>Account Status</h4>
-                <div class="status-item" v-for="(item, index) in accountStatus" :key="index">
-                  <div class="status-icon" :class="item.verified ? 'verified' : 'not-verified'">
-                    <svg v-if="item.verified" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <div
+                  class="status-item"
+                  v-for="(item, index) in accountStatus"
+                  :key="index"
+                >
+                  <div
+                    class="status-icon"
+                    :class="item.verified ? 'verified' : 'not-verified'"
+                  >
+                    <svg
+                      v-if="item.verified"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg
+                      v-else
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
                       <circle cx="12" cy="12" r="10"></circle>
                       <line x1="12" y1="8" x2="12" y2="12"></line>
                       <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -211,315 +314,396 @@
             </div>
           </div>
         </div>
-        
-        <div v-else-if="activeTab === 'contract'" class="contract-tab">
-  <div class="profile-section">
-    <div class="section-header">
-      <h2>Contract Information</h2>
-    </div>
-    
-    <div v-if="!contractFile" class="file-upload-container">
-      <input 
-        type="file" 
-        ref="contractFileInput" 
-        @change="handleFileUpload" 
-        accept=".pdf"
-        style="display: none"
-      >
-      <div 
-        class="file-drop-zone" 
-        @click="triggerFileInput"
-        @dragover.prevent="dragOver"
-        @dragleave.prevent="dragLeave"
-        @drop.prevent="handleFileDrop"
-        :class="{ 'drag-over': isDragOver }"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="12" y1="18" x2="12" y2="12"></line>
-          <line x1="9" y1="15" x2="15" y2="15"></line>
-        </svg>
-        <p>Drag and drop your contract PDF here</p>
-        <button class="btn-outline">Browse Files</button>
-      </div>
-    </div>
-    
-    <div v-else class="contract-preview">
-      <div class="contract-header">
-        <h3>{{ contractFile.name }}</h3>
-        <div class="contract-actions">
-          <button @click="viewContract" class="btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            View
-          </button>
-          <button @click="removeContract" class="btn-outline">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-            Remove
-          </button>
-        </div>
-      </div>
-      
-      <div class="contract-details">
-        <div class="detail-item">
-          <span>File Size:</span>
-          <span>{{ formatFileSize(contractFile.size) }}</span>
-        </div>
-        <div class="detail-item">
-          <span>Upload Date:</span>
-          <span>{{ formatDate(new Date()) }}</span>
-        </div>
-      </div>
-      
-      <div class="contract-preview-iframe">
-  <object 
-    v-if="contractFileUrl" 
-    :data="contractFileUrl" 
-    type="application/pdf" 
-    width="100%" 
-    height="500"
-  >
-    <p>Your browser doesn't support PDF preview. 
-      <a :href="contractFileUrl" download>Download PDF</a>
-    </p>
-  </object>
-</div>
-    </div>
-  </div>
-</div>
 
+        <div v-else-if="activeTab === 'contract'" class="contract-tab">
+          <div class="profile-section">
+            <div class="section-header">
+              <h2>Contract Information</h2>
+            </div>
+
+            <div v-if="!contractFile" class="file-upload-container">
+              <input
+                type="file"
+                ref="contractFileInput"
+                @change="handleFileUpload"
+                accept=".pdf"
+                style="display: none"
+              />
+              <div
+                class="file-drop-zone"
+                @click="triggerFileInput"
+                @dragover.prevent="dragOver"
+                @dragleave.prevent="dragLeave"
+                @drop.prevent="handleFileDrop"
+                :class="{ 'drag-over': isDragOver }"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="50"
+                  height="50"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                  ></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                <p>Drag and drop your contract PDF here</p>
+                <button class="btn-outline">Browse Files</button>
+              </div>
+            </div>
+
+            <div v-else class="contract-preview">
+              <div class="contract-header">
+                <h3>{{ contractFile.name }}</h3>
+                <div class="contract-actions">
+                  <button @click="viewContract" class="btn-primary">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path
+                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                      ></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    View
+                  </button>
+                  <button @click="removeContract" class="btn-outline">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path
+                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                      ></path>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              <div class="contract-details">
+                <div class="detail-item">
+                  <span>File Size:</span>
+                  <span>{{ formatFileSize(contractFile.size) }}</span>
+                </div>
+                <div class="detail-item">
+                  <span>Upload Date:</span>
+                  <span>{{ formatDate(new Date()) }}</span>
+                </div>
+              </div>
+
+              <div class="contract-preview-iframe">
+                <object
+                  v-if="contractFileUrl"
+                  :data="contractFileUrl"
+                  type="application/pdf"
+                  width="100%"
+                  height="500"
+                >
+                  <p>
+                    Your browser doesn't support PDF preview.
+                    <a :href="contractFileUrl" download>Download PDF</a>
+                  </p>
+                </object>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import $ from "jquery";
+import axios from "axios";
+import { get_token, get_user_details } from "@/router";
+
+const GLOBAL_URL = process.env.VUE_APP_GLOBAL_URL;
+
 export default {
-  name: 'TaskEvaluationProfile',
+  name: "TaskEvaluationProfile",
   data() {
     return {
-      activeTab: 'profile',
+      activeTab: "profile",
       profile: {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        countryCode: '+1',
-        phone: '555-123-4567',
-        role: 'evaluator',
-        title: 'graphic-design',
-        country: '',
-        state: '',
-        city: '',
-        postalCode: '',
-        streetAddress: '',
-        avatar: require('@/assets/Avatar.png'),
+        firstName: "",
+        lastName: "",
+        email: "",
+        countryCode: "",
+        phone: "",
+        role: "",
+        title: "",
+        country: "",
+        state: "",
+        city: "",
+        postalCode: "",
+        streetAddress: "",
+        avatar: require("@/assets/Avatar.png"),
       },
-      
+
       // Contract File Upload Properties
       contractFile: null,
       contractFileUrl: null,
       isDragOver: false,
-      
-      // Existing Data Properties
+
+      // Dynamic Data Properties
       stats: {
-        tasksEvaluated: 127,
-        rating: 4.8
+        tasksEvaluated: 0,
+        rating: 0,
       },
-      performanceMetrics: [
-        { label: 'Speed', value: 78 },
-        { label: 'Quality', value: 92 },
-        { label: 'Tasks Completed', value: 85 }
-      ],
-      upcomingTasks: [
-        { title: 'Website Redesign Review', due: 'Today', priority: 'high' },
-        { title: 'Mobile App UX Evaluation', due: 'Tomorrow', priority: 'medium' },
-        { title: 'API Documentation Review', due: 'In 3 days', priority: 'low' }
-      ],
-      accountStatus: [
-        { text: 'Profile form not filled completely', verified: false }
-      ]
-    }
+      performanceMetrics: [],
+      upcomingTasks: [],
+      accountStatus: [],
+
+      role: "",
+      last_name: "",
+      first_name: "",
+    };
+  },
+  mounted() {
+    this.get_user_detail();
+    this.loadDashboardData();
   },
   methods: {
+    async get_user_detail() {
+      var view_url = `${GLOBAL_URL}/system_management/view_user/`;
+      var header = {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get_token()}`,
+      };
+      const userDetails = get_user_details();
+      const userId = userDetails.user_id;
+      console.log("User ID", userId);
+      console.log("userDetails URL", userDetails);
+      try {
+        var response = await axios.get(view_url, { 
+          headers: header,
+          params: { user_id: userId }
+        });
+        var response_data = JSON.parse(response.data);
+        if (response_data.status === "success") {
+          this.first_name = response_data.data.first_name;
+          this.last_name = response_data.data.last_name;
+          this.role = response_data.data.role;
+        } else {
+        }
+      } catch (error) {}
+    },
+    async loadDashboardData() {
+      try {
+        // Add API calls here to fetch:
+        // - Performance metrics
+        // - Upcoming tasks
+        // - Account status
+        // - Stats
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      }
+    },
     // Role Title Method
     getRoleTitle() {
       const roles = {
-        'evaluator': 'Senior Evaluator',
-        'team-member': 'Team Member',
-        'team-leader': 'Team Leader',
-        'manager': 'Manager',
-        'admin': 'Administrator'
-      }
-      return roles[this.profile.role] || 'Senior Evaluator'
+        evaluator: "Senior Evaluator",
+        "team-member": "Team Member",
+        "team-leader": "Team Leader",
+        manager: "Manager",
+        admin: "Administrator",
+      };
+      return roles[this.profile.role] || "Senior Evaluator";
     },
-    
+
     // Photo Upload Method
     uploadPhoto() {
       // Logic to upload a photo would go here
-      console.log('Upload photo triggered')
+      console.log("Upload photo triggered");
       // Implement file selection and upload logic
-      const input = document.createElement('input')
-      input.type = 'file'
-      input.accept = 'image/*'
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
       input.onchange = (event) => {
-        const file = event.target.files[0]
+        const file = event.target.files[0];
         if (file) {
-          const reader = new FileReader()
+          const reader = new FileReader();
           reader.onload = (e) => {
-            this.profile.avatar = e.target.result
-          }
-          reader.readAsDataURL(file)
+            this.profile.avatar = e.target.result;
+          };
+          reader.readAsDataURL(file);
         }
-      }
-      input.click()
+      };
+      input.click();
     },
-    
+
     // Save Changes Method
     saveChanges() {
       // Comprehensive validation before saving
       const requiredFields = [
-        'firstName', 'lastName', 'email', 
-        'phone', 'country', 'city'
-      ]
-      
-      const missingFields = requiredFields.filter(field => 
-        !this.profile[field] || this.profile[field].trim() === ''
-      )
-      
+        "firstName",
+        "lastName",
+        "email",
+        "phone",
+        "country",
+        "city",
+      ];
+
+      const missingFields = requiredFields.filter(
+        (field) => !this.profile[field] || this.profile[field].trim() === ""
+      );
+
       if (missingFields.length > 0) {
-        alert(`Please fill in the following fields: ${missingFields.join(', ')}`)
-        return
+        alert(
+          `Please fill in the following fields: ${missingFields.join(", ")}`
+        );
+        return;
       }
-      
+
       // Validate email format
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(this.profile.email)) {
-        alert('Please enter a valid email address')
-        return
+        alert("Please enter a valid email address");
+        return;
       }
-      
-      console.log('Saving profile changes', this.profile)
+
+      console.log("Saving profile changes", this.profile);
       // Implement actual save logic (API call, etc.)
     },
-    
+
     // Contract File Upload Methods
     triggerFileInput() {
-      this.$refs.contractFileInput.click()
+      this.$refs.contractFileInput.click();
     },
-    
+
     handleFileUpload(event) {
-      const file = event.target.files[0]
-      this.processFile(file)
+      const file = event.target.files[0];
+      this.processFile(file);
     },
-    
+
     handleFileDrop(event) {
-      const file = event.dataTransfer.files[0]
-      this.processFile(file)
-      this.isDragOver = false
+      const file = event.dataTransfer.files[0];
+      this.processFile(file);
+      this.isDragOver = false;
     },
-    
+
     processFile(file) {
       // Comprehensive PDF validation
       if (!file) {
-        alert('No file selected')
-        return
+        alert("No file selected");
+        return;
       }
-      
+
       // Check file type
-      const validTypes = ['application/pdf', 'pdf']
-      const isValidType = validTypes.includes(file.type) || 
-        file.name.toLowerCase().endsWith('.pdf')
-      
+      const validTypes = ["application/pdf", "pdf"];
+      const isValidType =
+        validTypes.includes(file.type) ||
+        file.name.toLowerCase().endsWith(".pdf");
+
       // Check file size (limit to 10MB)
-      const maxSize = 10 * 1024 * 1024 // 10MB
-      const isValidSize = file.size <= maxSize
-      
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      const isValidSize = file.size <= maxSize;
+
       if (isValidType && isValidSize) {
-        this.contractFile = file
-        
+        this.contractFile = file;
+
         // Use FileReader for better compatibility
-        const reader = new FileReader()
+        const reader = new FileReader();
         reader.onload = (e) => {
-          this.contractFileUrl = e.target.result
-        }
-        reader.readAsDataURL(file)
+          this.contractFileUrl = e.target.result;
+        };
+        reader.readAsDataURL(file);
       } else {
         // Detailed error messaging
         if (!isValidType) {
-          alert('Please upload a valid PDF file')
+          alert("Please upload a valid PDF file");
         }
         if (!isValidSize) {
-          alert('File is too large. Maximum file size is 10MB.')
+          alert("File is too large. Maximum file size is 10MB.");
         }
-        
+
         // Reset file input
-        this.$refs.contractFileInput.value = ''
+        this.$refs.contractFileInput.value = "";
       }
     },
-    
+
     dragOver() {
-      this.isDragOver = true
+      this.isDragOver = true;
     },
-    
+
     dragLeave() {
-      this.isDragOver = false
+      this.isDragOver = false;
     },
-    
+
     viewContract() {
       if (this.contractFileUrl) {
         // Open in new tab or use PDF viewer
-        window.open(this.contractFileUrl, '_blank')
+        window.open(this.contractFileUrl, "_blank");
       }
     },
-    
+
     removeContract() {
       // Reset contract file and URL
-      this.contractFile = null
-      this.contractFileUrl = null
-      
+      this.contractFile = null;
+      this.contractFileUrl = null;
+
       // Reset file input
       if (this.$refs.contractFileInput) {
-        this.$refs.contractFileInput.value = ''
+        this.$refs.contractFileInput.value = "";
       }
     },
-    
+
     // Utility Methods
     formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes'
-      const k = 1024
-      const sizes = ['Bytes', 'KB', 'MB', 'GB']
-      const i = Math.floor(Math.log(bytes) / Math.log(k))
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+      if (bytes === 0) return "0 Bytes";
+      const k = 1024;
+      const sizes = ["Bytes", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
     },
-    
+
     formatDate(date) {
-      return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    }
+      return new Date(date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    },
   },
-  
+
   // Lifecycle Hook for Cleanup
   beforeDestroy() {
     // Prevent memory leaks
     if (this.contractFileUrl) {
-      URL.revokeObjectURL(this.contractFileUrl)
+      URL.revokeObjectURL(this.contractFileUrl);
     }
-  }
-}
+  },
+};
 </script>
 
-
 <style scoped>
-.dashboard-btn{
+.dashboard-btn {
   text-decoration: none;
   font-size: 12px;
 }
@@ -637,7 +821,7 @@ export default {
 }
 
 .tab.active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -762,7 +946,8 @@ label {
   margin-left: 2px;
 }
 
-input, select {
+input,
+select {
   padding: 0.75rem;
   border: 1px solid #444;
   border-radius: 4px;
@@ -777,7 +962,8 @@ input::placeholder {
   color: #777;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   border-color: #ff3333;
   outline: none;
   box-shadow: 0 0 0 2px rgba(255, 51, 51, 0.2);
@@ -1094,19 +1280,19 @@ h4 {
   .profile-sidebar {
     order: -1;
   }
-  
+
   .banner h1 {
     font-size: 1.5rem;
   }
-  
+
   .banner p {
     font-size: 0.9rem;
   }
-  
+
   .action-buttons {
     justify-content: center;
   }
-  
+
   .tab {
     padding: 0.75rem 1rem;
   }
@@ -1116,23 +1302,23 @@ h4 {
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .header {
     padding: 0.5rem 1rem;
   }
-  
+
   .banner {
     padding: 1.25rem 1rem;
   }
-  
+
   .content-wrapper {
     padding: 1rem;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
-  
+
   .action-buttons button {
     width: 100%;
   }
@@ -1203,7 +1389,7 @@ h4 {
   overflow: hidden;
 }
 
-.profile-logo{
+.profile-logo {
   color: red;
   font-weight: bold;
 }

@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import 'bootstrap';
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import NotificationToast from './components/NotificationToast.vue';

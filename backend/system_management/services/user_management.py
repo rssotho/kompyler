@@ -711,7 +711,7 @@ class UserManagementServices:
 
     def view_user(self):
 
-        data = self.request.data
+        data = self.request.query_params
 
         serializer: ViewUserSerializer = ViewUserSerializer(
             data = data

@@ -11,8 +11,8 @@
       </div>
       <div class="carousel">
         <transition-group name="fade" tag="div" class="slides">
-          <div 
-            v-for="(slide, index) in slides" 
+          <div
+            v-for="(slide, index) in slides"
             :key="slide.id"
             v-show="currentSlide === index"
             class="slide"
@@ -24,8 +24,8 @@
           <p>{{ slides[currentSlide].description }}</p>
         </div>
         <div class="carousel-dots">
-          <span 
-            v-for="(slide, index) in slides" 
+          <span
+            v-for="(slide, index) in slides"
             :key="`dot-${slide.id}`"
             :class="['dot', { active: currentSlide === index }]"
             @click="setSlide(index)"
@@ -39,18 +39,23 @@
       <div class="form-container">
         <div class="otp-section">
           <h1>Verify Your Email</h1>
-          <p class="otp-instructions">We've sent a 6-digit code to your email</p>
-          
-          <div v-if="errorMessage" class="error-message">
-            {{ errorMessage }}
+          <p class="otp-instructions">
+            We've sent a 6-digit code to your email
+          </p>
+
+          <div v-if="success_message" class="success-message">
+            {{ success_message }}
           </div>
-          
+          <div v-if="show_error_message" class="error-message">
+            {{ error_message }}
+          </div>
+
           <div class="otp-input-container">
-            <input 
-              v-for="(digit, index) in otpDigits" 
+            <input
+              v-for="(digit, index) in otpDigits"
               :key="index"
               v-model="otpDigits[index]"
-              type="text" 
+              type="text"
               maxlength="1"
               @input="handleOtpInput(index, $event)"
               @keydown.delete="handleOtpDelete(index)"
@@ -59,17 +64,23 @@
               class="otp-input"
             />
           </div>
-          
-          <button class="submit-button" @click="$router.push('/team-selection')" :disabled="!isComplete">
+
+          <button
+            class="submit-button"
+            @click="verify_otp"
+            :disabled="!isComplete"
+          >
             Verify
           </button>
-          
+
           <p class="resend-otp">
-            Didn't receive a code? 
-            <span class="resend-link" @click="resendOTP" v-if="canResend">Resend</span>
+            Didn't receive a code?
+            <span class="resend-link" @click="create_otp" v-if="canResend"
+              >Resend</span
+            >
             <span v-else>Resend available in {{ timeLeft }}s</span>
           </p>
-          
+
           <p class="change-email" @click="$router.push('/signup')">
             Change email address
           </p>
@@ -80,12 +91,16 @@
 </template>
 
 <script>
+import axios from "axios";
+import { get_token } from "@/router";
+
+const GLOBAL_URL = process.env.VUE_APP_GLOBAL_URL;
+
 export default {
-  name: 'OTPVerificationView',
+  name: "OTPVerificationView",
   data() {
     return {
-      otpDigits: ['', '', '', '', '', ''],
-      errorMessage: '',
+      otpDigits: ["", "", "", "", "", ""],
       timeLeft: 0,
       canResend: true,
       isMobile: false,
@@ -93,45 +108,119 @@ export default {
       slides: [
         {
           id: 1,
-          image: require('@/assets/login_1.png'),
-          title: 'Spend Less Time on Admin.',
-          description: 'More Time Getting Things Done.'
+          image: require("@/assets/login_1.png"),
+          title: "Spend Less Time on Admin.",
+          description: "More Time Getting Things Done.",
         },
         {
           id: 2,
-          image: require('@/assets/login_2.png'),
-          title: 'Tired of messy task reviews?',
-          description: 'Kompyler cleaned it up.'
+          image: require("@/assets/login_2.png"),
+          title: "Tired of messy task reviews?",
+          description: "Kompyler cleaned it up.",
         },
         {
           id: 3,
-          image: require('@/assets/login_3.png'),
-          title: 'Real task evaluations.',
-          description: 'Real stakeholder insights.'
-        }
+          image: require("@/assets/login_3.png"),
+          title: "Real task evaluations.",
+          description: "Real stakeholder insights.",
+        },
       ],
-      slideInterval: null
-    }
+      slideInterval: null,
+      success_message: "",
+      error_message: "",
+      show_error_message: false,
+    };
   },
   computed: {
     isComplete() {
-      return this.otpDigits.every(digit => digit !== '')
-    }
+      return this.otpDigits.every((digit) => digit !== "");
+    },
   },
   mounted() {
     this.checkScreenSize();
-    window.addEventListener('resize', this.checkScreenSize);
+    window.addEventListener("resize", this.checkScreenSize);
     this.startCarousel();
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.checkScreenSize);
+    window.removeEventListener("resize", this.checkScreenSize);
     this.stopCarousel();
   },
   methods: {
+    async verify_otp() {
+      if (!this.isComplete) return;
+
+      const otp_code = this.otpDigits.join("");
+      const verify_url = `${GLOBAL_URL}/system_management/verify_otp/`;
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get_token()}`,
+      };
+
+      try {
+        const response = await axios.post(
+          verify_url,
+          { otp_code },
+          { headers }
+        );
+        let response_data = response.data;
+
+        // Handle both string and object responses
+        if (typeof response_data === "string") {
+          response_data = JSON.parse(response_data);
+        }
+
+        if (response_data.status === "success") {
+          this.success_message = response_data.message;
+          this.show_error_message = false;
+          this.$router.push("/team-selection");
+        } else {
+          this.error_message = response_data.message;
+          this.show_error_message = true;
+          this.success_message = "";
+        }
+      } catch (error) {
+        this.success_message = "";
+        if (error.response && error.response.data) {
+          // Extract just the message from the error response
+          const errorData = typeof error.response.data === 'string' 
+            ? JSON.parse(error.response.data) 
+            : error.response.data;
+          this.error_message = errorData.message;
+        } else if (error.request) {
+          this.error_message = "Network error. Please check your connection.";
+        } else {
+          this.error_message = "An error occurred. Please try again.";
+        }
+        this.show_error_message = true;
+      }
+    },
+
+    async create_otp() {
+      var login_url = `${GLOBAL_URL}/system_management/create_otp/`;
+      var header = {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get_token()}`,
+      };
+      try {
+        var response = await axios.post(login_url, {}, { headers: header });
+        var response_data = JSON.parse(response.data);
+
+        if (response_data.status == "success") {
+          this.success_message = "OTP created successfully";
+        } else {
+          this.error_message = response_data.message || "Failed to create OTP";
+          this.show_error_message = true;
+        }
+      } catch (error) {
+        this.error_message = "Failed to create OTP: " + (error.message || "Unknown error");
+        this.show_error_message = true;
+      }
+    },
+
     handleOtpInput(index, event) {
       const value = event.target.value;
       if (!/^\d*$/.test(value)) {
-        this.otpDigits[index] = '';
+        this.otpDigits[index] = "";
         return;
       }
       if (value && index < 5) {
@@ -146,28 +235,13 @@ export default {
       }
     },
     handleOtpPaste(event) {
-      const paste = event.clipboardData.getData('text');
-      const numbers = paste.replace(/\D/g, '').split('').slice(0, 6);
+      const paste = event.clipboardData.getData("text");
+      const numbers = paste.replace(/\D/g, "").split("").slice(0, 6);
       if (numbers.length === 6) {
         this.otpDigits = numbers;
       }
     },
-    verifyOTP() {
-      // Add verification logic here
-      console.log('Verifying OTP:', this.otpDigits.join(''));
-    },
-    resendOTP() {
-      if (!this.canResend) return;
-      this.timeLeft = 60;
-      this.canResend = false;
-      const timer = setInterval(() => {
-        this.timeLeft--;
-        if (this.timeLeft <= 0) {
-          this.canResend = true;
-          clearInterval(timer);
-        }
-      }, 1000);
-    },
+
     checkScreenSize() {
       this.isMobile = window.innerWidth < 768;
     },
@@ -187,9 +261,9 @@ export default {
     resetCarouselTimer() {
       this.stopCarousel();
       this.startCarousel();
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -553,7 +627,7 @@ input:focus {
 .success-message {
   padding: 10px;
   margin-bottom: 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border-radius: 4px;
   text-align: center;
@@ -630,10 +704,12 @@ input:focus {
 }
 
 /* Animations */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
@@ -642,29 +718,29 @@ input:focus {
   .auth-container {
     flex-direction: column;
   }
-  
+
   .form-section {
     padding: 20px;
   }
-  
+
   .form-container {
     max-width: 100%;
   }
-  
+
   .name-fields {
     flex-direction: column;
     gap: 0;
   }
-  
+
   h1 {
     font-size: 24px;
     text-align: center;
   }
-  
+
   .toggle-text {
     text-align: center;
   }
-  
+
   /* Adjust OTP inputs for mobile */
   .otp-input {
     width: 35px;

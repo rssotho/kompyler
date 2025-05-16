@@ -11,8 +11,8 @@
       </div>
       <div class="carousel">
         <transition-group name="fade" tag="div" class="slides">
-          <div 
-            v-for="(slide, index) in slides" 
+          <div
+            v-for="(slide, index) in slides"
             :key="slide.id"
             v-show="currentSlide === index"
             class="slide"
@@ -24,8 +24,8 @@
           <p>{{ slides[currentSlide].description }}</p>
         </div>
         <div class="carousel-dots">
-          <span 
-            v-for="(slide, index) in slides" 
+          <span
+            v-for="(slide, index) in slides"
             :key="`dot-${slide.id}`"
             :class="['dot', { active: currentSlide === index }]"
             @click="setSlide(index)"
@@ -40,22 +40,24 @@
         <!-- OTP Verification Section -->
         <div class="otp-section" v-if="showOTPSection">
           <h1>Verify Your Email</h1>
-          <p class="otp-instructions">We've sent a 6-digit code to example@email.com</p>
-          
+          <p class="otp-instructions">
+            We've sent a 6-digit code to example@email.com
+          </p>
+
           <div class="otp-input-container">
-            <input 
-              v-for="index in 6" 
+            <input
+              v-for="index in 6"
               :key="index"
-              type="text" 
+              type="text"
               maxlength="1"
               class="otp-input"
             />
           </div>
-          
+
           <button class="submit-button">Verify</button>
-          
+
           <p class="resend-otp">
-            Didn't receive a code? 
+            Didn't receive a code?
             <span class="resend-link">Resend</span>
           </p>
         </div>
@@ -65,54 +67,129 @@
           <h1>Create an account</h1>
           <p class="toggle-text">
             Already have an account?
-            <span class="toggle-link" @click="$router.push('/login')">Log in</span>
+            <span class="toggle-link" @click="$router.push('/login')"
+              >Log in</span
+            >
           </p>
 
           <form @submit.prevent>
             <div class="name-fields">
               <div class="form-group">
-                <input type="text" id="firstName" placeholder="First name" required />
+                <input
+                  type="text"
+                  id="firstName"
+                  placeholder="First name"
+                  v-model="sign_up_data.first_name"
+                  @input="validateFirstName"
+                />
+                <span class="error-text" v-if="firstNameError">{{ firstNameError }}</span>
               </div>
               <div class="form-group">
-                <input type="text" id="lastName" placeholder="Last name" required />
+                <input
+                  type="text"
+                  id="lastName"
+                  placeholder="Last name"
+                  v-model="sign_up_data.last_name"
+                  @input="validateLastName"
+                />
+                <span class="error-text" v-if="lastNameError">{{ lastNameError }}</span>
               </div>
             </div>
-
             <div class="form-group">
-              <input type="email" id="email" placeholder="Email" required />
+              <input 
+                type="tel" 
+                id="phone_number" 
+                placeholder="Phone number" 
+                v-model="sign_up_data.phone_number"
+                pattern="^0[0-9]{9}$"
+                maxlength="10"
+                @input="validatePhoneNumber"
+              />
+              <span class="error-text" v-if="phoneError">{{ phoneError }}</span>
+            </div>
+            <div class="form-group">
+              <input 
+                type="email"
+                id="email"
+                v-model="sign_up_data.email"
+                placeholder="Email"
+                @input="validateEmail"
+              />
+              <span class="error-text" v-if="emailError">{{ emailError }}</span>
             </div>
 
             <div class="form-group password-field">
-              <input type="password" id="password" placeholder="Enter your password" required minlength="6" />
-              <button type="button" class="password-toggle">
-                <i class="fas fa-eye"></i>
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                v-model="sign_up_data.password"
+                @input="validatePassword"
+              />
+              <button type="button" class="password-toggle" @click="togglePassword('password')">
+                <i :class="['fas', showPassword ? 'fa-eye-slash' : 'fa-eye']"></i>
               </button>
+              <span class="error-text" v-if="passwordError">{{ passwordError }}</span>
+            </div>
+
+            <div class="form-group password-field">
+              <input
+                type="password"
+                id="confirm_password"
+                placeholder="Confirm your password"
+                v-model="sign_up_data.confirm_password"
+                @input="validateConfirmPassword"
+              />
+              <button type="button" class="password-toggle" @click="togglePassword('confirm_password')">
+                <i :class="['fas', showConfirmPassword ? 'fa-eye-slash' : 'fa-eye']"></i>
+              </button>
+              <span class="error-text" v-if="confirmPasswordError">{{ confirmPasswordError }}</span>
             </div>
 
             <div class="form-group checkbox-group">
               <label class="checkbox-container">
-                <input type="checkbox" required />
+                <input type="checkbox" v-model="termsAccepted" @change="validateTerms"/>
                 <span class="checkmark"></span>
                 <span class="checkbox-text">
-                  I agree to the <a href="#" class="terms-link">Terms & Conditions</a>
+                  I agree to the
+                  <a href="#" class="terms-link" @click.prevent="showTermsModal = true">Terms & Conditions</a>
                 </span>
               </label>
+              <span class="error-text" v-if="termsError">{{ termsError }}</span>
             </div>
 
-            <button type="submit" class="submit-button" @click="$router.push('/verify-otp')">Create account</button>
+            <button
+              type="submit"
+              class="submit-button"
+              :disabled="!isValid || !termsAccepted"
+              @click="sign_up">
+              Create account
+            </button>
+
+            <!-- Add error message display -->
+            <div v-if="show_error_message" class="error-message">
+              {{ error_message }}
+            </div>
           </form>
 
-          <div class="social-auth">
-            <p class="divider">Or register with</p>
-            <div class="social-buttons">
-              <button class="social-button google">
-                <i class="fab fa-google"></i>
-                <span>Google</span>
-              </button>
-              <button class="social-button apple">
-                <i class="fab fa-apple"></i>
-                <span>Apple</span>
-              </button>
+          <!-- Terms and Conditions Modal -->
+          <div class="modal" v-if="showTermsModal">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2>Terms and Conditions</h2>
+                <button class="close-btn" @click="showTermsModal = false">&times;</button>
+              </div>
+              <div class="modal-body">
+                <p>1. By using our service, you agree to these terms and conditions.</p>
+                <p>2. We respect your privacy and protect your personal information.</p>
+                <p>3. You must provide accurate and complete information when creating an account.</p>
+                <p>4. You are responsible for maintaining the security of your account.</p>
+                <!-- Add more terms as needed -->
+              </div>
+              <div class="modal-footer">
+                <button class="modal-btn" @click="acceptTerms">Accept</button>
+                <button class="modal-btn cancel" @click="showTermsModal = false">Close</button>
+              </div>
             </div>
           </div>
         </div>
@@ -122,8 +199,13 @@
 </template>
 
 <script>
+import $ from "jquery";
+import axios from "axios";
+
+const GLOBAL_URL = process.env.VUE_APP_GLOBAL_URL;
+
 export default {
-  name: 'SignupView',
+  name: "SignupView",
   data() {
     return {
       isMobile: false,
@@ -132,36 +214,222 @@ export default {
       slides: [
         {
           id: 1,
-          image: require('@/assets/login_1.png'),
-          title: 'Spend Less Time on Admin.',
-          description: 'More Time Getting Things Done.'
+          image: require("@/assets/login_1.png"),
+          title: "Spend Less Time on Admin.",
+          description: "More Time Getting Things Done.",
         },
         {
           id: 2,
-          image: require('@/assets/login_2.png'),
-          title: 'Tired of messy task reviews?',
-          description: 'Kompyler cleaned it up.'
+          image: require("@/assets/login_2.png"),
+          title: "Tired of messy task reviews?",
+          description: "Kompyler cleaned it up.",
         },
         {
           id: 3,
-          image: require('@/assets/login_3.png'),
-          title: 'Real task evaluations.',
-          description: 'Real stakeholder insights.'
-        }
+          image: require("@/assets/login_3.png"),
+          title: "Real task evaluations.",
+          description: "Real stakeholder insights.",
+        },
       ],
-      slideInterval: null
+      slideInterval: null,
+
+      // Integration Variables
+      sign_up_data: {
+        email: "",
+        password: "",
+        last_name: "",
+        first_name: "",
+        phone_number: "",
+      },
+      phoneError: '',
+      passwordError: '',
+      confirmPasswordError: '',
+      termsAccepted: false,
+      termsError: '',
+      showPassword: false,
+      showConfirmPassword: false,
+      showTermsModal: false,
+      isValid: false,
+
+      // New validation error messages
+      firstNameError: '',
+      lastNameError: '',
+      emailError: '',
+      error_message: '',
+      show_error_message: false,
     }
   },
   mounted() {
     this.checkScreenSize();
-    window.addEventListener('resize', this.checkScreenSize);
+    window.addEventListener("resize", this.checkScreenSize);
     this.startCarousel();
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.checkScreenSize);
+    window.removeEventListener("resize", this.checkScreenSize);
     this.stopCarousel();
   },
   methods: {
+    // Integration Functions
+
+    validateFirstName() {
+      if (!this.sign_up_data.first_name) {
+        this.firstNameError = 'First name is required';
+      } else if (this.sign_up_data.first_name.length < 2) {
+        this.firstNameError = 'First name must be at least 2 characters';
+      } else {
+        this.firstNameError = '';
+      }
+      this.checkFormValidity();
+    },
+
+    validateLastName() {
+      if (!this.sign_up_data.last_name) {
+        this.lastNameError = 'Last name is required';
+      } else if (this.sign_up_data.last_name.length < 2) {
+        this.lastNameError = 'Last name must be at least 2 characters';
+      } else {
+        this.lastNameError = '';
+      }
+      this.checkFormValidity();
+    },
+
+    validateEmail() {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.sign_up_data.email) {
+        this.emailError = 'Email is required';
+      } else if (!emailRegex.test(this.sign_up_data.email)) {
+        this.emailError = 'Please enter a valid email address';
+      } else {
+        this.emailError = '';
+      }
+      this.checkFormValidity();
+    },
+
+    validatePhoneNumber() {
+      const phoneRegex = /^0[0-9]{9}$/;
+      if (!this.sign_up_data.phone_number) {
+        this.phoneError = 'Phone number is required';
+      } else if (!phoneRegex.test(this.sign_up_data.phone_number)) {
+        this.phoneError = 'Phone number must start with 0 and have 10 digits';
+      } else {
+        this.phoneError = '';
+      }
+      this.checkFormValidity();
+    },
+
+    validatePassword() {
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!this.sign_up_data.password) {
+        this.passwordError = 'Password is required';
+      } else if (!passwordRegex.test(this.sign_up_data.password)) {
+        this.passwordError = 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character';
+      } else {
+        this.passwordError = '';
+      }
+      this.validateConfirmPassword();
+      this.checkFormValidity();
+    },
+
+    validateConfirmPassword() {
+      if (!this.sign_up_data.confirm_password) {
+        this.confirmPasswordError = 'Please confirm your password';
+      } else if (this.sign_up_data.password !== this.sign_up_data.confirm_password) {
+        this.confirmPasswordError = 'Passwords do not match';
+      } else {
+        this.confirmPasswordError = '';
+      }
+      this.checkFormValidity();
+    },
+
+    validateTerms() {
+      if (!this.termsAccepted) {
+        this.termsError = 'You must accept the terms and conditions';
+      } else {
+        this.termsError = '';
+      }
+      this.checkFormValidity();
+    },
+
+    acceptTerms() {
+      this.termsAccepted = true;
+      this.termsError = '';
+      this.showTermsModal = false;
+      this.checkFormValidity();
+    },
+
+    checkFormValidity() {
+      this.isValid = !this.firstNameError && !this.lastNameError && 
+                    !this.emailError && !this.phoneError && 
+                    !this.passwordError && !this.confirmPasswordError && 
+                    this.termsAccepted;
+    },
+
+    togglePassword(field) {
+      if (field === 'password') {
+        this.showPassword = !this.showPassword;
+        const input = document.getElementById('password');
+        input.type = this.showPassword ? 'text' : 'password';
+      } else {
+        this.showConfirmPassword = !this.showConfirmPassword;
+        const input = document.getElementById('confirm_password');
+        input.type = this.showConfirmPassword ? 'text' : 'password';
+      }
+    },
+
+    async sign_up() {
+      // Validate all fields
+      this.validateFirstName();
+      this.validateLastName();
+      this.validateEmail();
+      this.validatePhoneNumber();
+      this.validatePassword();
+      this.validateConfirmPassword();
+      this.validateTerms();
+
+      if (!this.isValid) {
+        this.error_message = "Please fix all errors before submitting";
+        this.show_error_message = true;
+        return;
+      }
+
+      var sign_up_url = `${GLOBAL_URL}/system_management/sign_up/`;
+      var headers = {
+        "Content-Type": "application/json",
+      };
+
+      try {
+        var response = await axios.post(sign_up_url, this.sign_up_data, {
+          headers: headers,
+        });
+        var response_data = JSON.parse(response.data);
+
+        if (response_data.status === "success") {
+          this.$router.push("/");
+          this.success_message = response_data.message;
+        } else {
+          this.error_message = response_data.message;
+          this.show_error_message = true;
+        }
+      } catch (error) {
+        if (error.response) {
+          try {
+            const errorData = JSON.parse(error.response.data);
+            this.error_message = errorData.message || 'An error occurred during sign up';
+          } catch (e) {
+            this.error_message = error.response.data || error.message;
+          }
+        } else if (error.request) {
+          // The request was made but no response was received
+          this.error_message = 'No response received from server';
+        } else {
+          // Something happened in setting up the request
+          this.error_message = error.message;
+        }
+        this.show_error_message = true;
+      }
+    },
+
+    // End Integration Functions
     checkScreenSize() {
       this.isMobile = window.innerWidth < 768;
     },
@@ -181,9 +449,9 @@ export default {
     resetCarouselTimer() {
       this.stopCarousel();
       this.startCarousel();
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -355,6 +623,7 @@ h1 {
   width: 100%;
 }
 
+input[type="tel"],
 input[type="text"],
 input[type="email"],
 input[type="password"] {
@@ -547,18 +816,20 @@ input:focus {
 .success-message {
   padding: 10px;
   margin-bottom: 20px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border-radius: 4px;
   text-align: center;
 }
 
 .error-message {
+  margin: 10px 0;
   padding: 10px;
-  margin-bottom: 20px;
-  background-color: #f44336;
-  color: white;
+  background-color: rgba(255, 51, 51, 0.1);
+  border: 1px solid #ff3333;
   border-radius: 4px;
+  color: #ff3333;
+  font-size: 14px;
   text-align: center;
 }
 
@@ -623,11 +894,20 @@ input:focus {
   color: #cccccc;
 }
 
+.error-text {
+  color: #ff3333;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
 /* Animations */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
   opacity: 0;
 }
 
@@ -636,34 +916,110 @@ input:focus {
   .auth-container {
     flex-direction: column;
   }
-  
+
   .form-section {
     padding: 20px;
   }
-  
+
   .form-container {
     max-width: 100%;
   }
-  
+
   .name-fields {
     flex-direction: column;
     gap: 0;
   }
-  
+
   h1 {
     font-size: 24px;
     text-align: center;
   }
-  
+
   .toggle-text {
     text-align: center;
   }
-  
+
   /* Adjust OTP inputs for mobile */
   .otp-input {
     width: 35px;
     height: 45px;
     font-size: 18px;
   }
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #888888;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px;
+  color: #cccccc;
+  line-height: 1.6;
+}
+
+.modal-footer {
+  padding: 20px;
+  border-top: 1px solid #333333;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-btn:not(.cancel) {
+  background-color: #ff3333;
+  color: white;
+}
+
+.modal-btn.cancel {
+  background-color: #333333;
+  color: white;
 }
 </style>
